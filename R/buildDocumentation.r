@@ -84,10 +84,4 @@ buildDocumentation <- function(target) {
 	close(con)
 }
 
-JasperDocs <- function() {
-
-	loc <- paste(.jasper.home, "\\documentation\\index.html", sep="")
-	browseURL(loc)
-
-}
 # buildDocumentation(target="K:\\NDPHopen\\Stats User Area\\Jasper\\jasper\\documentation\\")
