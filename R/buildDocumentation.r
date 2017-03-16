@@ -1,7 +1,7 @@
 buildDocumentation <- function(target) {
 
 	# this should probably be run from a fresh copy of R
-	indextext <- "<html><head><title>Jasper version 2</title><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\"></head><h1>Jasper</h1></br>"
+	indextext <- "<html>\n<head>\n<title>Jasper version 2</title>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\">\n</head>\n<h1>Jasper</h1>\n</br>"
 	
 	
 	# load the standard varnames 
@@ -25,7 +25,7 @@ buildDocumentation <- function(target) {
 	
 		if (is.function(eval(parse(text=i)))) {
 		
-			htmltext <- paste("<html><html><head><title>Jasper version 2 - ", i, "</title><link rel=\"stylesheet\" type=\"text/css\" href=\"../style.css\"></head><h1>", i, "</h1>", sep="")
+			htmltext <- paste("<html>\n<head>\n<title>Jasper version 2 - ", i, "</title>\n<link rel=\"stylesheet\" type=\"text/css\" href=\"../style.css\">\n</head>\n<h1>", i, "</h1>\n", sep="")
 			
 			# work out if the function is a main/extra/other function
 			# if it's a main function then it should also have a description
@@ -38,14 +38,14 @@ buildDocumentation <- function(target) {
 			}
 			
 			
-			htmltext <- paste(htmltext, "<p>", fn_desc, "<p>", sep="")
+			htmltext <- paste(htmltext, "<p>", fn_desc, "<p>\n", sep="")
 			
 			# get the arguments of the current function
 			fn.args <- formals(i)
 			
 			# abort if there are no arguments 
 			if (length(fn.args) == 0) {
-				htmltext <- paste(htmltext, "<p><a href='../index.html'>Back to main listing</a></html>", sep="")
+				htmltext <- paste(htmltext, "<p><a href='../index.html'>Back to main listing</a>\n</html>\n", sep="")
 				con <- file(paste(target, "\\functions\\", i, ".html", sep=""), open="wt")
 				writeLines(text=htmltext, con=con)
 				close(con)
@@ -56,10 +56,10 @@ buildDocumentation <- function(target) {
 			descs <- rep("", length(fn.args))
 			for (j in names(fn.args)) descs[which(names(fn.args)==j)] <- paste(ifelse(j %in% std_vars$argname, std_vars$desc[std_vars$argname == j], get_fn_arg(i, j, per_fn_args)), sep="")
 			
-			argstext <- paste("<b>", names(fn.args), "</b>", sapply(fn.args, function(z) ifelse(is.null(z), " = ", ifelse(z == "", " ", " = "))), fn.args, " : ", descs, "</br>", sep="")
+			argstext <- paste("<b>", names(fn.args), "</b>", sapply(fn.args, function(z) ifelse(is.null(z), " = ", ifelse(z == "", " ", " = "))), fn.args, " : ", descs, "</br>\n", sep="")
 			argstext <- paste(argstext, collapse="")
 			
-			htmltext <- paste(htmltext, argstext, "<p><a href='../index.html'>Back to main listing</a></html>", sep="")
+			htmltext <- paste(htmltext, argstext, "<p><a href='../index.html'>Back to main listing</a>\n</html>", sep="")
 	
 			# write out the function HTML file
 			con <- file(paste(target, "\\functions\\", i, ".html", sep=""), open="wt")
@@ -73,9 +73,9 @@ buildDocumentation <- function(target) {
 
 	
 	# update the index file text 
-	indextext <- paste(indextext, "<b>Main functions</b></br>", paste(paste("<a href='functions/", mainfns, ".html'>", mainfns, "</a></br>", sep=""),collapse=""), sep="")
-	indextext <- paste(indextext, "<p><b>Helper functions</b></br>", paste(paste("<a href='functions/", extrafns, ".html'>", extrafns, "</a></br>", sep=""),collapse=""), sep="")
-	indextext <- paste(indextext, "<p><b>Other functions</b></br>", paste(paste("<a href='functions/", otherfns, ".html'>", otherfns, "</a></br>", sep=""),collapse=""), sep="")
+	indextext <- paste(indextext, "<b>Main functions</b></br>\n", paste(paste("<a href='functions/", mainfns, ".html'>", mainfns, "</a></br>\n", sep=""),collapse=""), sep="")
+	indextext <- paste(indextext, "<p><b>Helper functions</b></br>\n", paste(paste("<a href='functions/", extrafns, ".html'>", extrafns, "</a></br>\n", sep=""),collapse=""), sep="")
+	indextext <- paste(indextext, "<p><b>Other functions</b></br>\n", paste(paste("<a href='functions/", otherfns, ".html'>", otherfns, "</a></br>\n", sep=""),collapse=""), sep="")
 	
 	# write out the index file
 	indextext <- paste(indextext, "</html>", sep="")
