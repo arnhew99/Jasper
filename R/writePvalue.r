@@ -45,7 +45,7 @@ writePvalue <- function(pvalues, x, y, use.lower.limit=FALSE, lower.limit=1e-100
 		a.round <- writePvalue.format(pvalues[i])[1]
 		b <- writePvalue.format(pvalues[i])[2]
 		
-		if (all(a.round=="1", b==0)) {
+		if (all(a.round=="1", b==0, !use.upper.limit)) {
 			text(x=x[i], y=y[i], labels="1", cex=cex, col=col[i], adj=adj, font=font[i])
 		} else if (all(use.upper.limit, pvalues[i] > upper.limit)) {
 
