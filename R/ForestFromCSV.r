@@ -222,6 +222,9 @@ ForestFromCSV <- function(file,
 		ColDecimalPlaces <- strsplit(ColDecimalPlaces, "=", fixed=TRUE)
 		coldp_names <- sapply(ColDecimalPlaces, function(z) return(z[1]))
 		coldp_dps <- sapply(ColDecimalPlaces, function(z) as.numeric(z[2]))
+	} else {
+		coldp_names <- NULL
+		coldp_dps <- NULL
 	}
 	
 	# set up how the data gets loaded, if we need to ignore any columns then add a sentence to do this
@@ -453,7 +456,23 @@ ForestFromCSV <- function(file,
 
 
 	# work out the amount of space needed for the text in each column, plus the plot width
-	spacing <- FFCSV.evalSpacing(mainfont=mainfont, orient=orient, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, mar=mar, col.ids=c(1,other.cols), anyhets=anyhets, rawdata=rawdata, HetTrendScale=HetTrendScale, print.headings=print.headings, plot.width=plot.width, nforests=nforests)[1]
+	spacing <- FFCSV.evalSpacing(mainfont=mainfont, 
+									orient=orient, 
+									type=type, 
+									filestem=filestem, 
+									blank.right.percent=blank.right.percent, 
+									blank.bottom.percent=blank.bottom.percent, 
+									mar=mar, 
+									col.ids=c(1,other.cols), 
+									anyhets=anyhets, 
+									rawdata=rawdata, 
+									HetTrendScale=HetTrendScale, 
+									print.headings=print.headings, 
+									plot.width=plot.width, 
+									coldp_names=coldp_names,
+									coldp_dps=coldp_dps,
+									pvalue.cols=pvalue.cols,
+									nforests=nforests)[1]
 	
 	
 	
@@ -473,7 +492,7 @@ ForestFromCSV <- function(file,
 		} else {
 			col.ids <- c(1,other.cols)
 		}
-		optim.spacing <- function(z) return(abs(FFCSV.evalSpacing(mainfont=z, orient=orient, type=type, filestem=tmpfilestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, mar=mar, col.ids=col.ids, anyhets=anyhets, rawdata=rawdata, HetTrendScale=HetTrendScale, print.headings=print.headings, plot.width=plot.width, nforests=nforests, ValueDigits=ValueDigits)[2]))
+		optim.spacing <- function(z) return(abs(FFCSV.evalSpacing(mainfont=z, orient=orient, type=type, filestem=tmpfilestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, mar=mar, col.ids=col.ids, anyhets=anyhets, rawdata=rawdata, HetTrendScale=HetTrendScale, print.headings=print.headings, plot.width=plot.width, nforests=nforests, ValueDigits=ValueDigits, coldp_names=coldp_names, coldp_dps=coldp_dps, pvalue.cols=pvalue.cols)[2]))
 		
 		# do the optimisation
 		optim.mainfont <- optimise(f=optim.spacing, interval=c(0, current.mainfont),maximum=FALSE)
@@ -484,7 +503,25 @@ ForestFromCSV <- function(file,
 		par(mar=mar)
 		blankPlot(c(0,100), c(0,100), mainfont)
 		par(xpd=NA)		
-		spacing <- FFCSV.evalSpacing(mainfont=mainfont, orient=orient, type=type, filestem=tmpfilestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, mar=mar, col.ids=col.ids, anyhets=anyhets, rawdata=rawdata, HetTrendScale=HetTrendScale, print.headings=print.headings, plot.width=plot.width, nforests=nforests, ValueDigits=ValueDigits)[1]
+		spacing <- FFCSV.evalSpacing(mainfont=mainfont, 
+										orient=orient, 
+										type=type, 
+										filestem=tmpfilestem, 
+										blank.right.percent=blank.right.percent, 
+										blank.bottom.percent=blank.bottom.percent, 
+										mar=mar, 
+										col.ids=col.ids, 
+										anyhets=anyhets, 
+										rawdata=rawdata, 
+										HetTrendScale=HetTrendScale, 
+										print.headings=print.headings, 
+										plot.width=plot.width, 
+										nforests=nforests, 
+										coldp_names=coldp_names, 
+										coldp_dps=coldp_dps,
+										pvalue.cols=pvalue.cols, 
+										ValueDigits=ValueDigits)[1]
+										
 		cat("done\n")
 		cat(paste("Spacing is", sprintf("%.4f", spacing), "\n"))
 		flush.console()
@@ -566,7 +603,8 @@ ForestFromCSV <- function(file,
 	if (other.cols[1] == -1) {
 		other.cols.widths <- 0 
 	} else {
-		other.cols.widths <- sapply(other.cols, function(z) max(sapply(convertUnicode(as.character(rawdata[-1,z])), strwidth, cex=1, font=2), strwidth(convertUnicode(print.headings[z]), cex=1, font=2)))
+		# other.cols.widths <- sapply(other.cols, function(z) max(sapply(convertUnicode(as.character(rawdata[-1,z])), strwidth, cex=1, font=2), strwidth(convertUnicode(print.headings[z]), cex=1, font=2)))
+		other.cols.widths <- sapply(other.cols, function(z) FFCSV.findColWidth(column=rawdata[,z], heading=print.headings[z], colname=names(rawdata)[z], coldp_names=coldp_names, coldp_dps=coldp_dps, pvalue.cols=pvalue.cols))
 	}
 	
 	heading.width <- max(sapply(convertUnicode(as.character(rawdata$Heading)), strwidth, cex=1, font=blank.labels.font), strwidth(convertUnicode(print.headings[1]), cex=1, font=2))

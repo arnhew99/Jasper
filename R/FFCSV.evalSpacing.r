@@ -14,6 +14,9 @@ FFCSV.evalSpacing <- function(mainfont,
 								HetTrendScale=0.8,
 								spacing.text = "a",
 								spacing.cex=1,
+								coldp_names=NULL,
+								coldp_dps=NULL,
+								pvalue.cols=NULL,
 								ValueDigits=NULL) 
 	{
 								
@@ -25,8 +28,7 @@ FFCSV.evalSpacing <- function(mainfont,
 	if (col.ids[1] == -1) {
 		other.cols.widths <- 0 
 	} else {
-		# print(col.ids)
-		other.cols.widths <- sapply(col.ids, function(z) FFCSV.findColWidth(column=as.character(rawdata[,z]), heading=print.headings[z]))
+		other.cols.widths <- sapply(col.ids, function(z) FFCSV.findColWidth(column=rawdata[,z], heading=print.headings[z], colname=names(rawdata)[z], coldp_names=coldp_names, coldp_dps=coldp_dps, pvalue.cols=pvalue.cols))
 	}
 	
 	# plotlabel.width <- max(strwidth("0.00 (-0.00,-0.00)", cex=1, font=2), anyhets*strwidth("Heterogeneity: AI=3.7 (p=0.0001)", cex=1*HetTrendScale)) # second part is 0 if there are no tests
@@ -45,13 +47,28 @@ FFCSV.evalSpacing <- function(mainfont,
 	return(c(spacing, spacing-a.width))
 }
 
-FFCSV.findColWidth <- function(column, heading) {
+FFCSV.findColWidth <- function(column, heading, colname, coldp_names=NULL, coldp_dps=NULL, pvalue.cols=NULL) {
 
-	# print(column)
-	# print(sapply(convertUnicode(as.character(c(column, heading))), strwidth, font=2, cex=1))
-	# print(max(sapply(convertUnicode(as.character(c(column, heading))), strwidth, font=2, cex=1)))
-	return(max(sapply(convertUnicode(as.character(c(column, heading))), strwidth, font=2, cex=1)))
-	
+	# these lines left commented because debugging this is painful
+	# print(colname)
+	# print(pvalue.cols)
+	# print(cbind(c(column, heading), sapply(convertUnicode(as.character(c(column, heading))), strwidth, font=2, cex=1)))
+	if (all(!is.null(pvalue.cols), colname %in% pvalue.cols)) {
+		# print("this is to be formatted as a pvalue column")
+		return_width <- max(strwidth("<1\u00d710 ", font=2, cex=1), strwidth(convertUnicode(heading), font=2, cex=1))
+	}
+	else if (all(!is.null(coldp_names), !is.null(coldp_dps), colname %in% coldp_names)) {
+		# print("this column is converted to use a certain DP")
+		# find out which dp we are using 
+		cdp <- coldp_dps[which(coldp_names == colname)]
+		return_width <- max(sapply(c(sprintf(paste0("%.", cdp, "f"), column), convertUnicode(heading)), strwidth, font=2, cex=1))
+	} else {
+		return_width <- max(sapply(convertUnicode(as.character(c(column, heading))), strwidth, font=2, cex=1))
+	}
+
+	# print("return width is")
+	# print(return_width)
+	return(return_width)	
 
 }
 
@@ -93,38 +110,3 @@ FFCSV.optimise.linespace <- function(current.mar, line.spacing, ylocs, orient, m
 }
 
 
-FFCSV.evalColWidths <- function(mar.test, current.mar, spacing, spacing.is.inches=FALSE, headings, rawdata, orient, mainfont, type, filestem, blank.right.percent, blank.bottom.percent) {
-
-	new.mar <- c(current.mar[1], mar.test, current.mar[3], mar.test)
-	SetPage(orient=orient, perpage=1, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, attempt_adobe_kill=FALSE)
-	par(mar=new.mar)
-	blankPlot(c(0,100), c(0,100), mainfont)
-	par(xpd=NA)		
-
-	ncols <- length(headings)
-	all.col.widths <- sum(sapply(1:ncols, function(z) FFCSV.findColWidth(rawdata[,z], heading=headings[z])))
-	# print(all.col.widths)
-	
-	if (spacing.is.inches) {
-		invert.spacing <- function(inches) return(inches*100/(par("pin")[1] - par("mai")[2] - par("mai")[4]))
-		spacing <- invert.spacing(spacing)
-	}
-
-	
-	closeFile("PDF", suppress.notice=TRUE)
-	
-	target <- abs(100 - all.col.widths - (ncols-1)*spacing)
-
-	return(target)
-	
-}
-
-FFCSV.optimise.LRmargins <- function(current.mar, spacing, spacing.is.inches=FALSE, headings, rawdata, orient, mainfont, type, filestem, blank.right.percent, blank.bottom.percent) {
-
-	# function to optimise over
-	optim.LRmargin.fn <- function(z) {
-		xmar <- FFCSV.evalColWidths(mar.test=z, current.mar=current.mar, spacing=spacing, spacing.is.inches=spacing.is.inches, headings=headings, rawdata=rawdata, orient=orient, mainfont=mainfont, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent)
-		return(xmar)
-	}
-	return(optimise(f=optim.LRmargin.fn, interval=c(0,25), maximum=FALSE))
-}
