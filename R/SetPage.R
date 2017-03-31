@@ -7,6 +7,7 @@ function(orient="PORTRAIT",
 		attempt_adobe_kill=TRUE,
 		png_bg="transparent",
 		filestem="jasper_output", 
+		append_datetime=FALSE,
 		label=NULL,
 		font=NULL,
 		footer.title=NULL, 
@@ -97,6 +98,10 @@ function(orient="PORTRAIT",
 			page_width <- 11.69
 		}
 		else stop("Invalid orientation")
+	}
+	
+	if (append_datetime) {
+		filestem <- paste0(filestem, "_", strftime(Sys.time(), "%Y%m%d_%H%M"))
 	}
 	
 	# First open the device

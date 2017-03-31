@@ -1,6 +1,7 @@
 ForestFromCSV <- function(file, 
 	orient="PORTRAIT", 
 	filestem="test", 
+	append_datetime=FALSE,
 	type="GUI", 
 	expandDataLoading=FALSE, 
 	StopIfCodeExists=TRUE, 
@@ -584,7 +585,7 @@ ForestFromCSV <- function(file,
 	#### OK, ready to start writing out graphics instructions
 	
 	SetPage.command <- paste('\n\n\n##################################################################################',
-								'\n\n# set up the Jasper page\ntype <- \"', type, '\"\nSetPage(orient=\"',orient,'\", perpage=1, type=type, filestem=\"', filestem, '\", suppress.date=', deparse(suppress.date), ",", sep="")
+								'\n\n# set up the Jasper page\ntype <- \"', type, '\"\nSetPage(orient=\"',orient,'\", perpage=1, type=type, filestem=\"', filestem, '\", append_datetime=', as.character(append_datetime),', suppress.date=', deparse(suppress.date), ",", sep="")
 	
 	
 	if (!is.null(font) & font != "sans") SetPage.command <- paste(SetPage.command, 'font=\"', font,'\",', sep="")
