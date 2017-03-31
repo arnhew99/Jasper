@@ -248,7 +248,7 @@ ForestBasic <- function(rawdata,
 	}
 	
 	if (ValueLabels) {
-		middlevaluelabel <- ONYXForestValues(estim=rawdata$HR, upper=rawdata$UCI, lower=rawdata$LCI, isLogged=ExponentiateDataOnPlot, xaxmax=xaxmax, YLocs=yspacing$YLocs, Boldness=ifelse(rawdata$IsDiamond,2,1), mainfont=mainfont, separator=separator, Show=rawdata$Show, spacing=spacing, digits=ValueDigits)
+		middlevaluelabel <- ONYXForestValues(estim=rawdata$HR, upper=rawdata$UCI, lower=rawdata$LCI, isLogged=ExponentiateDataOnPlot, xaxmax=xaxmax, YLocs=yspacing$YLocs, Boldness=ifelse(rawdata$IsDiamond,2,1), mainfont=mainfont, separator=separator, Show=rawdata$Show, ShowCI=rawdata$ShowCI, spacing=spacing, digits=ValueDigits)
 		ONYXForestValueLabels(ThisCol=ValueLabelsHeader, MidValLab=middlevaluelabel, mainfont=mainfont, Ymax=ymax)
 	}
 	if (NLabel) {
