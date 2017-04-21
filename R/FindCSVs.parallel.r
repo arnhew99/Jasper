@@ -1,4 +1,4 @@
-FindCSVs.parallel <- function(directory) {
+FindCSVs.parallel <- function(directory, verbose=TRUE) {
 
 	require(parallel)
 
@@ -38,8 +38,10 @@ FindCSVs.parallel <- function(directory) {
 	# now we need to assign the objects in the global environment with the right names
 	for (i in 1:length(dats)) {
 
-		cat(paste("assigning", objnames[i], "\n"))
-		flush.console()
+		if (verbose) {
+			cat(paste("assigning", objnames[i], "\n"))
+			flush.console()
+		}
 		assign(x=objnames[i], value=dats[[i]], envir=.GlobalEnv)
 
 	}
