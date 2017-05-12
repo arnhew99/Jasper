@@ -67,6 +67,15 @@ ForestFromCSV <- function(file,
 	#
 	################################################################
 	
+	
+	# check which version of R we're running on... if it's R >= 3.4.0 then 
+	# we need to temporarily disable the JIT compiler 
+	if (all(as.numeric(R.version$major) == 3, as.numeric(substr(R.version$minor,1,1)) >= 4)) {
+		compiler:::enableJIT(0)
+		cat("R version >= 3.4.0 detected\n")
+		flush.console()
+	}
+	
 	# attempt to kill any open Adobe reader window (Adobe locks files so we can't write to them)
 	# subcomponents should not try to kill these windows, and should run SetPage with attempt_adobe_kill=FALSE
 	type <- toupper(type)
