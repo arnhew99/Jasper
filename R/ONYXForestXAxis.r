@@ -47,14 +47,14 @@ ONYXForestXAxis <- function(Range,
 				# need to compute underlying coordinates
 				#underlying.coord <- xaxmin + ((xNoEffect - logfn(Range[1])) / (logfn(Range[2])-logfn(Range[1])))*(xaxmax - xaxmin)
 				underlying.coord <- xaxmin + (xNoEffect - logfn(Range[1]))*xf
-				segments(underlying.coord, 0, underlying.coord, 0.99*Ymax, lend=2, lwd=lwd, lty=NoEffect.lty)
+				segments(underlying.coord, Ymin, underlying.coord, 0.98*Ymax, lend=2, lwd=lwd, lty=NoEffect.lty)
 			} else if (!(is.null(blanks$hideNoEffect))) {
 				
 				# if all are FALSE, then do the default
 				if (all(!blanks$hideNoEffect)) {
 				
 					underlying.coord <- xaxmin + (xNoEffect - logfn(Range[1]))*xf
-					segments(underlying.coord, 0, underlying.coord, 0.98*Ymax, lend=2, lwd=lwd, lty=NoEffect.lty)
+					segments(underlying.coord, Ymin, underlying.coord, 0.98*Ymax, lend=2, lwd=lwd, lty=NoEffect.lty)
 				
 				} else {
 				
