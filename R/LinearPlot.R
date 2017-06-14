@@ -550,14 +550,14 @@ LinearPlot <- function(
 		nlabels <- length(LineLabels)
 		xmax <- par("usr")[2]
 		ycoords <- trans.y(reglines[,1] + xmax*reglines[,2])
-		text(x=rep(xmax,nlabels), y=ycoords, labels=LineLabels, pos=4, cex=0.8*mainfont)
+		text(x=rep(xmax,nlabels), y=ycoords, labels=LineLabels, pos=4, cex=1)
 	
 	} else if (!is.null(LineLabels)) {
 	
 		nlabels <- length(LineLabels)
 		xmax <- par("usr")[2]
 		ycoords <- sapply(linelist,function(z) trans.y(z$estimate[which.max(z$meanrisk)]))
-		text(x=rep(xmax,nlabels), y=, labels=LineLabels, pos=4, cex=0.8*mainfont)
+		text(x=rep(xmax,nlabels), y=ycoords, labels=LineLabels, pos=4, cex=1)
 	
 	
 	}
