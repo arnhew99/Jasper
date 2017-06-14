@@ -11,6 +11,7 @@
 \item{attempt_adobe_kill}{ (default: TRUE)}
 \item{png_bg}{ (default: transparent)}
 \item{filestem}{String to use as the filename, an appropriate extension is appended automatically (default: jasper_output)}
+\item{append_datetime}{ (default: FALSE)}
 \item{label}{Plot label text to display at bottom left (possibly deprecated) (default: NULL)}
 \item{font}{ (default: NULL)}
 \item{footer.title}{Plot title to place at the bottom of the page above the standard footer. Supplying a vector of titles places each element on a new line (default: NULL)}
