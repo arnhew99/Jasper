@@ -6,7 +6,6 @@
 \item{file}{Path to input CSV file}
 \item{orient}{Page orientation, LANDSCAPE or PORTRAIT (default: PORTRAIT)}
 \item{filestem}{String to use as the filename, an appropriate extension is appended automatically (default: test)}
-\item{append_datetime}{ (default: FALSE)}
 \item{type}{One of the valid SetPage file types (default: GUI)}
 \item{expandDataLoading}{Instead of using FormatForest, expand the details of how the ForestBasic object is being created (default: FALSE)}
 \item{StopIfCodeExists}{If the code from a previous run would be overwritten, then halt. Avoids accidental deletion of edits (default: TRUE)}
@@ -61,7 +60,6 @@
 \item{pointGroupsFactor}{ (default: 0.9)}
 \item{additionalR}{Filename of further R code to be executed after the forest has been drawn but before the file closes. (default: NULL)}
 \item{suppress.date}{If TRUE, do not print the datetime or folder information at the bottom left of the page (default: FALSE)}
-\item{fixLabelsY}{ (default: FALSE)}
 \item{attempt_adobe_kill}{ (default: TRUE)}
 }
 \author{Matt Arnold}
