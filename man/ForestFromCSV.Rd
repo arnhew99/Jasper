@@ -39,7 +39,6 @@
 \item{forest.title}{Vector of titles to be placed centrally above each forest}
 \item{forest.titleY}{Y axis coordinate to align forest titles on (default: NULL)}
 \item{forest.title.axiscentred}{If TRUE, centre the title over the axis part only. If FALSE then centre over axis and estimate labels (default: FALSE)}
-\item{ylabels.offset}{ (default: 0)}
 \item{lwd}{Line width (scaling) (default: 1)}
 \item{xlab}{X axis label}
 \item{mar}{Vector of margins, in order c(bottom, left, top, right) (default: c(7, 2, 7, 2))}
