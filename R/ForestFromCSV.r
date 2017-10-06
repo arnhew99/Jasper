@@ -34,6 +34,7 @@ ForestFromCSV <- function(file,
 	forest.title="",
 	forest.titleY=NULL,
 	forest.title.axiscentred=FALSE,
+	ylabels.offset=0,
 	lwd=1,
 	xlab="", 
 	mar=c(7,2,7,2), 
@@ -56,6 +57,7 @@ ForestFromCSV <- function(file,
 	pointGroupsFactor=0.9,
 	additionalR=NULL,
 	suppress.date=FALSE,
+	fixLabelsY=FALSE,
 	attempt_adobe_kill=TRUE) {
 	
 	################################################################
@@ -292,6 +294,15 @@ ForestFromCSV <- function(file,
 	if (!is.null(ValueDigits) & length(ValueDigits) > 1) {
 		if (length(ValueDigits) != nforests) stop("\nIf a vector of ValueDigits is provided, there must be one for each forest")
 	}
+	
+	# check to see if LogScale and ExponentiateDataOnPlot are the right length 
+	if (all(length(LogScale) == 1, nforests > 1)) {
+		LogScale <- rep(LogScale, nforests)
+	}
+	if (all(length(ExponentiateDataOnPlot) == 1, nforests > 1)) {
+		ExponentiateDataOnPlot <- rep(ExponentiateDataOnPlot, nforests)
+	}
+	
 
 
 	# allow specification of multiple Ranges, xticks, xlabs, titles, ValueLabelsHeader
@@ -344,13 +355,13 @@ ForestFromCSV <- function(file,
 		}
 		if (substr(data.type.i,1,3) == "Log") {
 			logData <- FALSE
-			ExponentiateDataOnPlot <- TRUE
+			ExponentiateDataOnPlot[i] <- TRUE
 		} else if (substr(data.type.i,1,2) %in% c("RR")) {
 			logData <- TRUE
-			ExponentiateDataOnPlot <- TRUE
+			ExponentiateDataOnPlot[i] <- TRUE
 		} else if (substr(data.type.i,1,2) %in% c("HR")) {
 			logData <- FALSE
-			if (is.null(ExponentiateDataOnPlot)) ExponentiateDataOnPlot <- FALSE
+			if (is.null(ExponentiateDataOnPlot)) ExponentiateDataOnPlot[i] <- FALSE
 		}
 		else {
 			logData <- FALSE
@@ -461,7 +472,7 @@ ForestFromCSV <- function(file,
 	}
 
 	
-	ColumnsSetup.command <- paste("# find labels to put in the left most column\nleft.labels <- convertUnicode(as.character(rawdata$Heading))\n", "# what other columns should be plotted\nother.cols <- ", deparse(other.cols), "\n# find column headings\nprint.headings <- parseColHeadings(rawdata$ColHeadings, rd=rawdata)\n\n", sep="")
+	ColumnsSetup.command <- paste("# find labels to put in the left most column\nleft.labels <- convertUnicode(as.character(rawdata$Heading))\n", "# what other columns should be plotted\nother.cols <- ", deparse(other.cols, width.cutoff=500L), "\n# find column headings\nprint.headings <- parseColHeadings(rawdata$ColHeadings, rd=rawdata)\n\n", sep="")
 	
 
 
@@ -564,7 +575,7 @@ ForestFromCSV <- function(file,
 		SetPage(orient=orient, perpage=1, type=type, filestem=tmpfilestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, titlespace=titlespace, footerspace=footerspace, attempt_adobe_kill=FALSE)
 		par(mar=mar)
 		blankPlot(c(0,100), c(0,100), mainfont)
-		forest.locs <- ForestBasic(forest1, LogScale=LogScale, ExponentiateDataOnPlot=ExponentiateDataOnPlot, xaxmin=1, xaxmax=2, mainfont=1, verbose=FALSE)
+		forest.locs <- ForestBasic(forest1, LogScale=LogScale[1], ExponentiateDataOnPlot=ExponentiateDataOnPlot[1], xaxmin=1, xaxmax=2, mainfont=1, verbose=FALSE)
 		closeFile("PDF",suppress.notice=TRUE)
 
 		# do the optimisation
@@ -659,19 +670,19 @@ ForestFromCSV <- function(file,
 		forest.command <- paste(forest.command,"# draw the Forest plot(s)\n",
 								xaxmin.i, " <- ", sprintf("%.4f", xaxmin), "\n",
 								xaxmax.i, " <- ", xaxmin.i, " + plot.width\n", 
-								locs," <- ForestBasic(forest",i,",\n", blanks.part.command, Hets.part.command, Trends.part.command, "\tLogScale=", as.character(LogScale), ",\n\tExponentiateDataOnPlot=", as.character(ExponentiateDataOnPlot),
+								locs," <- ForestBasic(forest",i,",\n", blanks.part.command, Hets.part.command, Trends.part.command, "\tLogScale=", as.character(LogScale[i]), ",\n\tExponentiateDataOnPlot=", as.character(ExponentiateDataOnPlot[i]),
 								",\n\txaxmin=", xaxmin.i,
 								",\n\txaxmax=", xaxmax.i,								
-								",\n\txlim=", deparse(forest.Range[[i]]),
-								",\n\txticks=", deparse(forest.xticks[[i]]),
-								",\n\tticklabs=", deparse(ticklabs), 
+								",\n\txlim=", deparse(forest.Range[[i]], width.cutoff = 500L),
+								",\n\txticks=", deparse(forest.xticks[[i]], width.cutoff = 500L),
+								",\n\tticklabs=", deparse(ticklabs, width.cutoff = 500L), 
 								',\n\txlab=\"', xlab[[i]], '\"',
 								",\n\tNLabel=", as.character(FALSE),
 								",\n\tmainfont=1",
 								",\n\tValueLabels=", as.character(ValueLabels),
 								',\n\tValueLabelsHeader=\"', ValueLabelsHeader[[i]],
-								'\",\n\tValueDigits=', deparse(ValueDigits[i]),
-								',\n\tlwd=', deparse(lwd),
+								'\",\n\tValueDigits=', deparse(ValueDigits[i], width.cutoff = 500L),
+								',\n\tlwd=', deparse(lwd, width.cutoff = 500L),
 								',\n\tCISecond=', as.character(!boxTop),
 								',\n\tspacing=spacing/2',
 								',\n\tpointGroupsFactor=', pointGroupsFactor,
@@ -712,14 +723,14 @@ ForestFromCSV <- function(file,
 	
 	# the left hand column of labels is anchored at x=0
 	LeftLabels.command <- "# left hand column of labels\n"
+	LeftLabels.command <- paste0(LeftLabels.command, "ylabels.offset <- ", ylabels.offset, " * strheight(\"A\")\n")
 
-	LeftLabels.command <- paste(LeftLabels.command, 'text(x=0, y=100, labels=',deparse(print.headings[1]),', adj=c(0,0), font=2, cex=1)\n',sep="")
+	LeftLabels.command <- paste0(LeftLabels.command, 'text(x=0, y=100, labels=',deparse(print.headings[1]),', adj=c(0,0), font=2, cex=1)\n')
 	if (anyblanks) {
-		LeftLabels.command <- paste(LeftLabels.command,
-								"text(x=0, y=locs$YLocs, labels=left.labels[-blank.rows], adj=0, cex=1, font=ifelse(forest1$IsDiamond, 2,1))\n",
-								"text(x=0, y=locs$BlankLocs, labels=left.labels[blank.rows], adj=0, font=", blank.labels.font,", cex=1)\n\n", sep="")
+		LeftLabels.command <- paste0(LeftLabels.command, "text(x=0, y=", ifelse(fixLabelsY, "adjustYForText(locs$YLocs, left.labels[-blank.rows])", "locs$YLocs"), "+ ylabels.offset, labels=left.labels[-blank.rows], adj=0, cex=1, font=ifelse(forest1$IsDiamond, 2,1))\n")
+		LeftLabels.command <- paste0(LeftLabels.command, "text(x=0, y=", ifelse(fixLabelsY, "adjustYForText(locs$BlankLocs, left.labels[blank.rows])", "locs$BlankLocs"), "+ ylabels.offset, labels=left.labels[blank.rows], adj=0, font=", blank.labels.font,", cex=1)\n\n")
 	} else {
-		LeftLabels.command <- paste(LeftLabels.command,"text(x=0, y=locs$YLocs, labels=left.labels, adj=0, cex=1, font=ifelse(forest1$IsDiamond, 2,1))\n\n", sep="")
+		LeftLabels.command <- paste0(LeftLabels.command,"text(x=0, y=", ifelse(fixLabelsY, "adjustYForText(locs$YLocs, left.labels)", "locs$YLocs"), "+ ylabels.offset, labels=left.labels, adj=0, cex=1, font=ifelse(forest1$IsDiamond, 2,1))\n\n")
 	}
 	
 	# loop over the other columns, there's a bit of faffing involved in working out which forest a column comes after,
@@ -757,9 +768,9 @@ ForestFromCSV <- function(file,
 			# if its a pvalue column then do that instead 
 			if (names(rawdata)[other.cols[i]] %in% pvalue.cols) {
 				if (anyblanks) {
-					OtherCols.command <- paste(OtherCols.command, "writePvalue(pvalues = as.numeric(rawdata[-blank.rows,other.cols[", i, "]]), x=", col.i, ", y=locs$YLocs, adj=0, font=ifelse(forest1$IsDiamond, 2, 1),\n\t\t\tuse.lower.limit=", pvalue.use.lower.limit, ", lower.limit=", pvalue.lower.limit, ", use.upper.limit=", pvalue.use.upper.limit, ", upper.limit=", pvalue.upper.limit, ")\n",sep="")
+					OtherCols.command <- paste(OtherCols.command, "writePvalue(pvalues = as.numeric(rawdata[-blank.rows,other.cols[", i, "]]), x=", col.i, ", y=locs$YLocs + ylabels.offset, adj=0, font=ifelse(forest1$IsDiamond, 2, 1),\n\t\t\tuse.lower.limit=", pvalue.use.lower.limit, ", lower.limit=", pvalue.lower.limit, ", use.upper.limit=", pvalue.use.upper.limit, ", upper.limit=", pvalue.upper.limit, ")\n",sep="")
 				} else {
-					OtherCols.command <- paste(OtherCols.command, "writePvalue(pvalues = as.numeric(rawdata[,other.cols[", i, "]]), x=", col.i, ", y=locs$YLocs, adj=0, font=ifelse(forest1$IsDiamond, 2, 1),\n\t\t\tuse.lower.limit=", pvalue.use.lower.limit, ", lower.limit=", pvalue.lower.limit,  ", use.upper.limit=", pvalue.use.upper.limit, ", upper.limit=", pvalue.upper.limit, ")\n",sep="")
+					OtherCols.command <- paste(OtherCols.command, "writePvalue(pvalues = as.numeric(rawdata[,other.cols[", i, "]]), x=", col.i, ", y=locs$YLocs + ylabels.offset, adj=0, font=ifelse(forest1$IsDiamond, 2, 1),\n\t\t\tuse.lower.limit=", pvalue.use.lower.limit, ", lower.limit=", pvalue.lower.limit,  ", use.upper.limit=", pvalue.use.upper.limit, ", upper.limit=", pvalue.upper.limit, ")\n",sep="")
 				}
 			} else {
 				# write the lines that are in line with a forest point
@@ -775,12 +786,12 @@ ForestFromCSV <- function(file,
 						cdp <- NULL 
 				}
 				if (anyblanks) {
-					OtherCols.command <- paste(OtherCols.command, FFCSV.writeLines(i=i, x.coord=col.i, locs.name="YLocs", blank.rows.name="-blank.rows", adj=adj, dp=cdp), "\n", sep="")
+					OtherCols.command <- paste(OtherCols.command, FFCSV.writeLines(i=i, x.coord=col.i, locs.name="YLocs", blank.rows.name="-blank.rows", adj=adj, dp=cdp, fixLabelsY=fixLabelsY), "\n", sep="")
 					
 					# now the lines that are in the blanks			
-					OtherCols.command <- paste(OtherCols.command, FFCSV.writeLines(i=i, x.coord=col.i, locs.name="BlankLocs", blank.rows.name="blank.rows", font.isdiamond.switch=FALSE, adj=adj, dp=NULL), "\n", sep="")
+					OtherCols.command <- paste(OtherCols.command, FFCSV.writeLines(i=i, x.coord=col.i, locs.name="BlankLocs", blank.rows.name="blank.rows", font.isdiamond.switch=FALSE, adj=adj, dp=NULL, fixLabelsY=fixLabelsY), "\n", sep="")
 				} else {
-					OtherCols.command <- paste(OtherCols.command, FFCSV.writeLines(i=i, x.coord=col.i, locs.name="YLocs", blank.rows.name="", adj=adj, dp=cdp), "\n", sep="")
+					OtherCols.command <- paste(OtherCols.command, FFCSV.writeLines(i=i, x.coord=col.i, locs.name="YLocs", blank.rows.name="", adj=adj, dp=cdp, fixLabelsY=fixLabelsY), "\n", sep="")
 				}
 			}
 		}
@@ -923,12 +934,15 @@ FFCSV.writeTests <- function(foresti, rawdata, type="Het", pretty.label="Heterog
 }
 
 
-FFCSV.writeLines <- function(i, x.coord, locs.name, blank.rows.name, font.isdiamond.switch=TRUE, adj, dp=NULL) {
+FFCSV.writeLines <- function(i, x.coord, locs.name, blank.rows.name, font.isdiamond.switch=TRUE, adj, dp=NULL, fixLabelsY=FALSE) {
 	if (font.isdiamond.switch) font.command <- "font=ifelse(forest1$IsDiamond, 2, 1)," else font.command <- ""
 	if (!is.null(dp)) {
-		return(paste("text(x=", x.coord, ", y=locs$", locs.name, ", labels=sprintf(\"%.", dp, "f\", rawdata[,other.cols[",i, "]])[", blank.rows.name, "],", font.command, " adj=", adj, ", cex=1", ")\n", sep=""))
+		return(paste("text(x=", x.coord, ", y=locs$", locs.name, " + ylabels.offset, labels=sprintf(\"%.", dp, "f\", rawdata[,other.cols[",i, "]])[", blank.rows.name, "],", font.command, " adj=", adj, ", cex=1", ")\n", sep=""))
 	} else {
-		return(paste("text(x=", x.coord, ", y=locs$", locs.name, ", labels=convertUnicode(as.character(rawdata[,other.cols[",i, "]]))[", blank.rows.name, "],", font.command, " adj=", adj, ", cex=1", ")\n", sep=""))
+		labels_bit <- paste0("convertUnicode(as.character(rawdata[,other.cols[",i, "]]))[", blank.rows.name, "]")
+		ypos <- ifelse(fixLabelsY, paste0("adjustYForText(Ys=locs$", locs.name, ", labels=", labels_bit, "),\n\t"), paste0("locs$", locs.name, " + ylabels.offset, "))
+		# return(paste("text(x=", x.coord, ", y=locs$", locs.name, ", labels=convertUnicode(as.character(rawdata[,other.cols[",i, "]]))[", blank.rows.name, "],", font.command, " adj=", adj, ", cex=1", ")\n", sep=""))
+		return(paste("text(x=", x.coord, ", y=", ypos, " labels=", labels_bit, ", ", font.command, ", adj=", adj, ", cex=1", ")\n", sep=""))
 	}
 }
 
