@@ -72,7 +72,7 @@ function(orient="PORTRAIT",
 	# any running Adobe reader windows with the right title
 	if (all(attempt_adobe_kill, type == "PDF", .Platform$OS.type=="windows")) {
 		cmd <- paste0("taskkill /fi \"Windowtitle eq ", filestem, ".pdf - Adobe Reader\"")
-		system(command=cmd, intern=TRUE, wait=TRUE, show.output.on.console=FALSE)
+		system(command=cmd, intern=FALSE, wait=TRUE, show.output.on.console=FALSE)
 		# annoyingly it seems that sometimes the lock doesn't get released in time
 	}
 
