@@ -70,7 +70,6 @@ Histogram <- function(values,
 		}
 		# restrict to drawing points that are inside the plotting region
 		keepx <- newxat >= xregion[1] & newxat <= xregion[2]
-		print(keepx)
 		axis(side=1, at=newxat[keepx], labels=c("1%", "5%", "Median", "95%", "99%")[keepx], pos=yregion[1], font.axis=1, cex.axis=0.8, las=1, lend=1, tcl=-0.25, mgp=c(3,0.1,0))
 		quantilesx <- newxat[keepx]
 		
@@ -123,17 +122,18 @@ Histogram <- function(values,
 			} else {
 				Yaxis.at <- yticks
 			}
-			if (any(!is.null(yticklabs), !is.null(yticks))) {
+			if (any(is.null(yticklabs), !is.null(yticks))) {
 				yticklabs <- Yaxis.at
 			}
 		}
+		
 		
 		newyat <- rep(0,length(Yaxis.at))
 		for (i in 1:length(newyat)) {
 			newpt <- QMap(0, Yaxis.at[i], xlim, ylim, xregion, yregion)
 			newyat[i] <- newpt[2]			
 		}
-		axis(side=2, at=newyat, labels=yticklabs, pos=xregion[1]-strwidth("A"), font.axis=2, las=1, lend=1)
+		axis(side=2, at=newyat, labels=as.character(yticklabs), pos=xregion[1]-strwidth("A"), font.axis=2, las=1, lend=1)
 		text(y=mean(newyat), x=xregion[1]-strheight("A")-strwidth("0.00\t\t\t  ", font=2), labels=ylab, font=2, adj=c(0.5,1), srt=90)
 			
 	}
