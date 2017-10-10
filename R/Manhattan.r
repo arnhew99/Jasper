@@ -66,6 +66,8 @@ Manhattan <- function(pvals,
 		npts <- npts.new
 	
 		
+	} else {
+		blanks.new <- NULL
 	}
 	
 	
