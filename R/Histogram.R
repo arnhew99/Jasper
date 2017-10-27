@@ -17,7 +17,9 @@ Histogram <- function(values,
 						yticklabs=NULL,
 						xlab="", 
 						ylab="", 
-						LogData=FALSE) 
+						LogData=FALSE,
+						col=NA,
+						border="black") 
 {
 
 	clend <- par("lend")
@@ -46,15 +48,17 @@ Histogram <- function(values,
 		if (cbreak > xlim[2]) next
 		if (cbreak < xlim[1]) next
 		
+		
 		p1 <- QMap(cbreak, 0, xlim, ylim, xregion, yregion)
 		p2 <- QMap(cbreak, cdens, xlim, ylim, xregion, yregion)
 		p3 <- QMap(cbreak1, cdens, xlim, ylim, xregion, yregion)
 		p4 <- QMap(cbreak1, cdens1, xlim, ylim, xregion, yregion)
 		
+		rect(xleft=p1[1], xright=p3[1], ybottom=p1[2], ytop=p3[2], col=col)
 		
-		lines(c(p1[1],p2[1]), c(p1[2], p2[2]))
-		lines(c(p1[1],p3[1]), c(p2[2], p2[2]))
-		lines(c(p4[1],p4[1]), c(p2[2], p4[2]))
+		lines(c(p1[1],p2[1]), c(p1[2], p2[2]), col=border)
+		lines(c(p1[1],p3[1]), c(p2[2], p2[2]), col=border)
+		lines(c(p4[1],p4[1]), c(p2[2], p4[2]), col=border)
 		
 	}
 
