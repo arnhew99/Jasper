@@ -221,9 +221,9 @@ function(orient="PORTRAIT",
 
 			if (is.null(nlong) | is.null(nshort)) stop("If you leave perpage blank, then you need to provide BOTH of nlong and nshort")
 			perpage <- nlong*nshort
-		}
-		else {
-			if (perpage >= 10) perpage<-10
+		} else if (any(perpage > 10L, perpage <= 0L)) {
+			stop("perpage must be between 1 and 10.\nIf other layouts are needed then specify both of nlong and nshort")
+		} else {
 			longlist <-c(1, 2, 3, 2, 3, 3, 4, 4, 5, 5)
 			nlong<-longlist[perpage]
 			shortlist<-c(1, 1, 1, 2, 2, 2, 2, 2, 2, 2)
