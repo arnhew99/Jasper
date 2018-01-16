@@ -1,8 +1,8 @@
 Package: Jasper
 Type: Package
 Title: Jasper makes plots.
-Version: 2-260
-Date: 24-08-2017
+Version: 2-262
+Date: 21-11-2017
 Author: Matt Arnold
 Maintainer: Matt Arnold <matthew.arnold@ndph.ox.ac.uk>
 Description: Jasper is a system for creating consistently similar figures for publications.

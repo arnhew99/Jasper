@@ -17,6 +17,7 @@
 \item{XExponentiate}{ (default: FALSE)}
 \item{YLogScale}{ (default: FALSE)}
 \item{YExponentiate}{ (default: FALSE)}
+\item{YLogNeededForSE}{If Estimate is supplied with LCI and UCI as rate (hazard, odds) ratios then take logs when estimating the standard errors for box size scaling (default: FALSE)}
 \item{xlim}{Vector giving min and max value of X range to be plotted (default: NULL)}
 \item{ylim}{Vector giving min and max value of Y range to be plotted (default: NULL)}
 \item{xticks}{Vector of tick marks to put on the X axis (default: NULL)}
