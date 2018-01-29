@@ -21,6 +21,7 @@ LinearPlotFromCSV <- function(
 	XExponentiate=FALSE,
 	YLogScale=FALSE,
 	YExponentiate=FALSE,
+	YLogNeededForSE=FALSE,
 	xlim=NULL,
 	ylim=NULL,
 	xticks=NULL,
@@ -117,8 +118,13 @@ LinearPlotFromCSV <- function(
 
 	if (se.missing[1]) {
 		cat(paste0("No STDERR column, but found LCI and UCI\n"))
-		panels$STDERR <- (panels$UCI - panels$LCI)/4
-		command <- paste0(command, "panels$STDERR <- (panels$UCI - panels$LCI)/4\n\n")
+		if (YLogNeededForSE) {
+			panels$STDERR <- (log(panels$UCI) - log(panels$LCI))/(2*1.96)
+			command <- paste0(command, "panels$STDERR <- (log(panels$UCI) - log(panels$LCI))/(2*1.96)\n\n")
+		} else{
+			panels$STDERR <- (panels$UCI - panels$LCI)/(2*1.96)
+			command <- paste0(command, "panels$STDERR <- (panels$UCI - panels$LCI)/(2*1.96)\n\n")
+		}
 	} else {
 		command <- paste0(command, "\n")
 	}
@@ -437,8 +443,13 @@ AddCIs <- function(panel.group, XLogScale, XExponentiate, YLogScale, YExponentia
 	rf <- panel.group$RF_LEVEL
 	y <- panel.group$ESTIMATE
 	se <- panel.group$STDERR
-	lci <- y-1.96*se
-	uci <- y+1.96*se
+	if (all("LCI" %in% names(panel.group), "UCI" %in% names(panel.group))) {
+		lci <- panel.group$LCI
+		uci <- panel.group$UCI
+	} else {
+		lci <- y-1.96*se
+		uci <- y+1.96*se
+	}
 	
 	if (all(XLogScale, !XExponentiate)) rf <- log(rf)
 	if (all(YLogScale, !YExponentiate)) {
