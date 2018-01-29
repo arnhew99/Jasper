@@ -72,7 +72,7 @@ ForestFromCSV <- function(file,
 	
 	# check which version of R we're running on... if it's R >= 3.4.0 then 
 	# we need to temporarily disable the JIT compiler 
-	if (all(as.numeric(R.version$major) == 3, as.numeric(substr(R.version$minor,1,1)) >= 4)) {
+	if (all(as.integer(R.version$major) >= 3L, as.integer(substr(R.version$minor,1,1)) >= 4)) {
 		compiler:::enableJIT(0)
 		cat("R version >= 3.4.0 detected\n")
 		flush.console()
@@ -95,23 +95,29 @@ ForestFromCSV <- function(file,
 	if (any(is.null(tmpdir), is.na(tmpdir))) stop("No temporary working area available")
 	
 	
+	# generate a random number to append to our temporary working files
+	tmp_number <- sample(1e8, size=1)
+	
 	## check to see that we can write to the TEMP directory
-	con <- file(paste0(tmpdir, "\\", "jasper_temp_test_write"), open="wt")
+	testwrite <- paste0(tmpdir, "\\", "jasper_temp_test_write_", tmp_number)
+	con <- file(testwrite, open="wt")
 	writeLines("This is Jasper.", con)
 	close(con)
+	file.remove(testwrite)
+	
 	
 	
 	
 	# test to see if there are any existing files in that area, and delete any that do exist
-	tmpdir.filelist <- list.files(tmpdir)
-	tmpdir.jasperfiles <- tmpdir.filelist[grepl("jasper_temp", tmpdir.filelist, fixed=TRUE) | grepl("jasper_code", tmpdir.filelist, fixed=TRUE)]
-	if (length(tmpdir.jasperfiles) > 0) {
-		file.remove(paste0(tmpdir, "\\", tmpdir.jasperfiles))
-	}
+	# tmpdir.filelist <- list.files(tmpdir)
+	# tmpdir.jasperfiles <- tmpdir.filelist[grepl("jasper_temp", tmpdir.filelist, fixed=TRUE) | grepl("jasper_code", tmpdir.filelist, fixed=TRUE)]
+	# if (length(tmpdir.jasperfiles) > 0) {
+		# file.remove(paste0(tmpdir, "\\", tmpdir.jasperfiles))
+	# }
 	
 	
-	
-	tmpfilestem <- paste(tmpdir, "\\jasper_temp", sep="")
+	tmpfiles <- paste("\\jasper_temp_", tmp_number, sep="")
+	tmpfilestem <- paste(tmpdir, tmpfiles, sep="")
 	
 	
 	# for the time being, set DataLogged = ExponentiateDataOnPlot
@@ -548,7 +554,7 @@ ForestFromCSV <- function(file,
 		flush.console()
 
 	} else {
-		SetPage(orient=orient, perpage=1, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, titlespace=titlespace, footerspace=footerspace, attempt_adobe_kill=TRUE)
+		SetPage(orient=orient, perpage=1, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, titlespace=titlespace, footerspace=footerspace, attempt_adobe_kill=attempt_adobe_kill)
 		par(mar=mar)
 		blankPlot(c(0,100), c(0,100), mainfont)
 		par(xpd=NA)
@@ -595,7 +601,7 @@ ForestFromCSV <- function(file,
 		
 		cat("done\n")
 		flush.console()
-		SetPage(orient=orient, perpage=1, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, titlespace=titlespace, footerspace=footerspace)
+		SetPage(orient=orient, perpage=1, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, titlespace=titlespace, footerspace=footerspace, attempt_adobe_kill=FALSE)
 		par(mar=mar)
 		blankPlot(c(0,100), c(0,100), mainfont)
 		par(xpd=NA)	
@@ -613,6 +619,7 @@ ForestFromCSV <- function(file,
 	if (!is.null(blank.bottom.percent)) SetPage.command <- paste(SetPage.command, 'blank.bottom.percent=', blank.bottom.percent,',', sep="")
 	if (!is.null(footer.title)) SetPage.command <- paste(SetPage.command, 'footer.title=', deparse(footer.title, width.cutoff=500L),', ', sep="")
 	if (!is.null(footer.title.cex)) SetPage.command <- paste(SetPage.command, 'footer.title.cex=', footer.title.cex, ', ', sep="")
+	if (!attempt_adobe_kill) SetPage.command <- paste(SetPage.command, 'attempt_adobe_kill=FALSE, ', sep="")
 	
 	
 	SetPage.command <- paste0(SetPage.command, ' titlespace=', titlespace, ', footerspace=', footerspace, ')\n\n# Set page margins: format is c(bottom, left, top, right)\npar(mar=', deparse(mar), ")\n")
@@ -837,6 +844,14 @@ ForestFromCSV <- function(file,
 	file.copy(from=target_file, to=new_target_file, overwrite=TRUE)
 	cat("done\n")
 	flush.console()
+	
+	# delete the temporary R code file
+	file.remove(target_file)
+	
+	# delete any other files in the temp directory that have our temporary filestem
+	tmpfilelist <- list.files(tmpdir, pattern=tmpfiles, full.names=TRUE)
+	if (length(tmpfilelist > 0)) file.remove(tmpfilelist)
+	
 	
 	cat("Finished!\n")
 	
