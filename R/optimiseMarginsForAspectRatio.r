@@ -39,7 +39,7 @@ optimiseMarginsForAspectRatio <- function(target.aspectratio, l.mar, r.mar, inte
 	
 		tmpdir <- normalizePath(Sys.getenv("TEMP"), winslash="/")
 		tmpfilestem <- paste0(tmpdir, "/", floor(runif(1)*1e8))
-		SetPage(type=type, orient=orient, filestem=tmpfilestem, verbose=FALSE, ...)
+		SetPage(type=type, orient=orient, filestem=tmpfilestem, verbose=FALSE, attempt_adobe_kill=FALSE, ...)
 		par(mar=mar)
 		blankPlot(xlim=c(0,1), ylim=c(0,1), mainfont=1)
 		plot.dimensions <- par("pin")
