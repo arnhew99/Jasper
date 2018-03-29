@@ -51,7 +51,7 @@ FindCSVs.parallel <- function(directory, verbose=TRUE) {
 	rm("dats")
 	gc()
 
-	return(objnames)
+	invisible(objnames)
 
 
 }

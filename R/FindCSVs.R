@@ -25,6 +25,6 @@ FindCSVs <- function(folder=".", verbose=TRUE, upcase.names=FALSE) {
 	
 	}
 	setwd(curwd)
-	return(object.names)
+	invisible(object.names)
 
 }
