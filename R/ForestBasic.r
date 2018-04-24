@@ -24,7 +24,9 @@ ForestBasic <- function(rawdata,
 						xlab.adjust=0,
 						ValueLabels=TRUE, 
 						ValueLabelsHeader="Hazard ratio", 
+						ValueLabelsEffectSE=FALSE,
 						ValueDigits=NULL,
+						ValueDigitsSE=NULL,
 						separator=NULL, 
 						NLabel=FALSE, 
 						NLabelHeader="N",
@@ -248,7 +250,7 @@ ForestBasic <- function(rawdata,
 	}
 	
 	if (ValueLabels) {
-		middlevaluelabel <- ONYXForestValues(estim=rawdata$HR, upper=rawdata$UCI, lower=rawdata$LCI, isLogged=ExponentiateDataOnPlot, xaxmax=xaxmax, YLocs=yspacing$YLocs, Boldness=ifelse(rawdata$IsDiamond,2,1), mainfont=mainfont, separator=separator, Show=rawdata$Show, ShowCI=rawdata$ShowCI, spacing=spacing, digits=ValueDigits)
+		middlevaluelabel <- ONYXForestValues(estim=rawdata$HR, upper=rawdata$UCI, lower=rawdata$LCI, stderr=rawdata$stderr, isLogged=ExponentiateDataOnPlot, xaxmax=xaxmax, YLocs=yspacing$YLocs, Boldness=ifelse(rawdata$IsDiamond,2,1), mainfont=mainfont, separator=separator, Show=rawdata$Show, ShowCI=rawdata$ShowCI, spacing=spacing, digits=ValueDigits, digits_SE=ValueDigitsSE, ValueLabelsEffectSE=ValueLabelsEffectSE)
 		ONYXForestValueLabels(ThisCol=ValueLabelsHeader, MidValLab=middlevaluelabel, mainfont=mainfont, Ymax=ymax)
 	}
 	if (NLabel) {

@@ -1,4 +1,4 @@
-ONYXForestValues <- function(estim, upper, lower, isLogged=TRUE, xaxmax, YLocs, Boldness, mainfont, separator=", ", Show, ShowCI, spacing=0, digits=NULL) {
+ONYXForestValues <- function(estim, upper, lower, stderr=NULL, isLogged=TRUE, xaxmax, YLocs, Boldness, mainfont, separator=", ", Show, ShowCI, spacing=0, digits=NULL, digits_SE=NULL, ValueLabelsEffectSE=FALSE) {
 	
 	#  Value labels (adj: c(x-adj, y-adj); 0 for left/bottom, 1 for right/top, 0.5 for centre)
 
@@ -43,6 +43,14 @@ ONYXForestValues <- function(estim, upper, lower, isLogged=TRUE, xaxmax, YLocs, 
 	
 		if (ShowCI[i] == 0) {
 			text(x=xcoord+strwidth("0.00", cex=Font, font=Boldness[i]), y=YLocs[i], ValueLabels[[1]][i], font=Boldness[i], adj=c(1, 0.5), cex=Font)
+			next
+		}
+		if (ValueLabelsEffectSE) {
+			printval <- paste0("   ",sprintf(paste0("%.", ifelse(is.null(digits),2,digits), "f"), as.numeric(ValueLabels[[1]][i])))
+			
+			printval <- paste0(printval, " (", sprintf(paste0("%.", ifelse(is.null(digits_SE), 2, digits_SE), "f"), stderr[i]), ")")
+
+			text(x=xcoord, y=YLocs[i], labels=printval, adj=c(0,0.5), font=Boldness[i], cex=Font)
 			next
 		}
 		if (CIpositive) {

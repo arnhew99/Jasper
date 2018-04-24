@@ -41,7 +41,9 @@ ForestFromCSV <- function(file,
 	blank.labels.font=2, 
 	ValueLabels=TRUE, 
 	ValueLabelsHeader="", 
+	ValueLabelsEffectSE=FALSE,
 	ValueDigits=NULL,
+	ValueDigitsSE=NULL,
 	HetTrendScale=0.8, 
 	boxparm.stderr=NULL,
 	boxparm.sharedstderr=TRUE,
@@ -295,12 +297,17 @@ ForestFromCSV <- function(file,
 	# detect if ValueDigits is the right length or not
 	if (all(!is.null(ValueDigits), length(ValueDigits) == 1)) {
 		ValueDigits <- rep(ValueDigits,nforests)
-	}
-	
+	}		
 	if (!is.null(ValueDigits) & length(ValueDigits) > 1) {
 		if (length(ValueDigits) != nforests) stop("\nIf a vector of ValueDigits is provided, there must be one for each forest")
-	}
+	}	
 	
+	if (all(!is.null(ValueDigitsSE), length(ValueDigitsSE) == 1)) {
+		ValueDigitsSE <- rep(ValueDigitsSE,nforests)
+	}
+	if (!is.null(ValueDigitsSE) & length(ValueDigitsSE) > 1) {
+		if (length(ValueDigitsSE) != nforests) stop("\nIf a vector of ValueDigitsSE is provided, there must be one for each forest")
+	}
 	# check to see if LogScale and ExponentiateDataOnPlot are the right length 
 	if (all(length(LogScale) == 1, nforests > 1)) {
 		LogScale <- rep(LogScale, nforests)
@@ -688,7 +695,9 @@ ForestFromCSV <- function(file,
 								",\n\tmainfont=1",
 								",\n\tValueLabels=", as.character(ValueLabels),
 								',\n\tValueLabelsHeader=\"', ValueLabelsHeader[[i]],
-								'\",\n\tValueDigits=', deparse(ValueDigits[i], width.cutoff = 500L),
+								'\",\n\tValueLabelsEffectSE=', ValueLabelsEffectSE,
+								',\n\tValueDigits=', deparse(ValueDigits[i], width.cutoff = 500L),
+								',\n\tValueDigitsSE=', deparse(ValueDigitsSE[i], width.cutoff = 500L),
 								',\n\tlwd=', deparse(lwd, width.cutoff = 500L),
 								',\n\tCISecond=', as.character(!boxTop),
 								',\n\tspacing=spacing/2',
