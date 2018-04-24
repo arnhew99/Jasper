@@ -22,17 +22,6 @@ writePvalue <- function(pvalues, x, y, use.lower.limit=FALSE, lower.limit=1e-100
 	
 	for (i in 1:np) {
 	
-		# # b <- floor(log10(pvalues[i]))
-		# # a <- pvalues[i] * 10^(-b)
-		# # #a.round <- round(a,1)
-		# # a.round <- sprintf("%.0f", a)
-		# # # this rounding bit can lead to > 9.5 being rounded to 10
-		# # # which is a bit silly, so if this happens set it to 1 and 
-		# # # increase b by 1
-		# # if (a.round == "10") {
-			# # a.round <- "1"
-			# # b <- b + 1
-		# # }
 		# if missing then skip
 		if (is.na(pvalues[i])) next
 		
@@ -137,18 +126,12 @@ writePvalue <- function(pvalues, x, y, use.lower.limit=FALSE, lower.limit=1e-100
 
 }
 
-writePvalue.format <- function(p) {
+writePvalue.format <- function(p, digits=0) {
 
-	b <- floor(log10(p))
-	a <- p * 10^(-b)
-	a.round <- sprintf("%.0f", a)
-	# this rounding bit can lead to > 9.5 being rounded to 10
-	# which is a bit silly, so if this happens set it to 1 and 
-	# increase b by 1
-	if (a.round == "10") {
-		a.round <- "1"
-		b <- b + 1
-	}
-
-	return(c(a.round,b))
+	formatted <- sprintf(paste0("%.", digits, "e"), p)
+	formatted_split <- strsplit(formatted, "e")[[1]]
+	a <- formatted_split[1]
+	b <- sprintf("%.0f", as.numeric(formatted_split[2]))
+	return(c(a,b))
+	
 }
