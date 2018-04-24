@@ -4,6 +4,7 @@ china_map <- function(type,
 						table_cols=NULL, 
 						table_headings=NULL, 
 						sort_by=NULL, 
+						sort_decreasing=FALSE,
 						add_points_on_map=TRUE,
 						add_points_by_table=TRUE,
 						join_map_table_points=TRUE,
@@ -52,7 +53,6 @@ china_map <- function(type,
 	par(xpd=NA)
 	fit <- map("china", mar=c(7,12,7,12), projection="mercator")
 	
-	# draw a box over the Spratlys
 	rect(xleft=-0.5, ybottom=0, xright=0.5, ytop=0.23, border=NA, col="white")
 
 	reg_data <- structure(list(region_code = c(12L, 16L, 26L, 36L, 46L, 52L, 58L, 68L, 78L, 88L), 
@@ -73,14 +73,18 @@ china_map <- function(type,
 								
 	projected <- mapproject(reg_data$longitude, reg_data$latitude)
 	
-	table_dat <- read.csv(table_csv, as.is=TRUE, colClasses="character")
+	table_dat <- read.csv(file=table_csv, as.is=TRUE, colClasses="character")
 	
 	# reorder the table to be in the same order as the plotting information
 	# and then at writing time reorder the columns on the fly
 	table_dat <- table_dat[order(as.numeric(table_dat$region_code)),]
 	
 	if (!is.null(sort_by)) {
-		neworder <- order(table_dat[,sort_by])
+		if (sort_decreasing) {
+			neworder <- order(table_dat[,sort_by], decreasing=TRUE)
+		} else {
+			neworder <- order(table_dat[,sort_by])
+		}
 	} else if ("table_order" %in% names(table_dat)) {
 		neworder <- table_dat$table_order
 	} else {
