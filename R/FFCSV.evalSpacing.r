@@ -3,6 +3,7 @@ FFCSV.evalSpacing <- function(mainfont,
 								type, 
 								filestem, 
 								blank.right.percent, 
+								blank.left.percent,
 								blank.bottom.percent,
 								mar,
 								rawdata,
@@ -20,7 +21,7 @@ FFCSV.evalSpacing <- function(mainfont,
 								ValueDigits=NULL) 
 	{
 								
-	SetPage(orient=orient, perpage=1, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, attempt_adobe_kill=FALSE)
+	SetPage(orient=orient, perpage=1, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, blank.left.percent=blank.left.percent, verbose=FALSE, attempt_adobe_kill=FALSE)
 	par(mar=mar)
 	blankPlot(c(0,100), c(0,100), mainfont)
 	par(xpd=NA)		
@@ -73,10 +74,10 @@ FFCSV.findColWidth <- function(column, heading, colname, coldp_names=NULL, coldp
 }
 
 
-FFCSV.evalLabelSpacing <- function(mar.test, current.mar, ylocs, orient, mainfont, type, filestem, blank.right.percent, blank.bottom.percent, titlespace, footerspace) {
+FFCSV.evalLabelSpacing <- function(mar.test, current.mar, ylocs, orient, mainfont, type, filestem, blank.right.percent, blank.left.percent, blank.bottom.percent, titlespace, footerspace) {
 
 	new.mar <- c(mar.test,current.mar[2], mar.test, current.mar[4])
-	SetPage(orient=orient, perpage=1, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, titlespace=titlespace, footerspace=footerspace, attempt_adobe_kill=FALSE)
+	SetPage(orient=orient, perpage=1, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.left.percent=blank.left.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, titlespace=titlespace, footerspace=footerspace, attempt_adobe_kill=FALSE)
 	par(mar=new.mar)
 	blankPlot(c(0,100), c(0,100), mainfont)
 	par(xpd=NA)		
@@ -95,12 +96,12 @@ FFCSV.evalLabelSpacing <- function(mar.test, current.mar, ylocs, orient, mainfon
 	
 }
 
-FFCSV.optimise.linespace <- function(current.mar, line.spacing, ylocs, orient, mainfont, type, filestem, blank.right.percent, blank.bottom.percent, titlespace, footerspace) 
+FFCSV.optimise.linespace <- function(current.mar, line.spacing, ylocs, orient, mainfont, type, filestem, blank.right.percent, blank.left.percent, blank.bottom.percent, titlespace, footerspace) 
 {
 
 	# function to optimise over
 	optim.TBmargin.fn <- function(z) {
-		spac <- FFCSV.evalLabelSpacing(mar.test=z, current.mar=current.mar, ylocs=ylocs, orient=orient, mainfont=mainfont, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, titlespace=titlespace, footerspace=footerspace)
+		spac <- FFCSV.evalLabelSpacing(mar.test=z, current.mar=current.mar, ylocs=ylocs, orient=orient, mainfont=mainfont, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.left.percent=blank.left.percent, blank.bottom.percent=blank.bottom.percent, titlespace=titlespace, footerspace=footerspace)
 		# return(abs(spac[2] - (spac[1]*ifelse(mainfont < 1.5, 1.5, mainfont)*line.spacing)))
 		return(abs(spac[2] - line.spacing*spac[3]))
 	}

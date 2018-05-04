@@ -50,6 +50,7 @@ ForestFromCSV <- function(file,
 	boxsizeoverride=FALSE,
 	boxTop=FALSE,
 	blank.right.percent=NULL, 
+	blank.left.percent=NULL, 
 	blank.bottom.percent=NULL, 
 	titlespace=0.1,
 	footerspace=0.1,
@@ -495,6 +496,7 @@ ForestFromCSV <- function(file,
 									type=type, 
 									filestem=filestem, 
 									blank.right.percent=blank.right.percent, 
+									blank.left.percent=blank.left.percent, 
 									blank.bottom.percent=blank.bottom.percent, 
 									mar=mar, 
 									col.ids=c(1,other.cols), 
@@ -526,14 +528,14 @@ ForestFromCSV <- function(file,
 		} else {
 			col.ids <- c(1,other.cols)
 		}
-		optim.spacing <- function(z) return(abs(FFCSV.evalSpacing(mainfont=z, orient=orient, type=type, filestem=tmpfilestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, mar=mar, col.ids=col.ids, anyhets=anyhets, rawdata=rawdata, HetTrendScale=HetTrendScale, print.headings=print.headings, plot.width=plot.width, nforests=nforests, ValueDigits=ValueDigits, coldp_names=coldp_names, coldp_dps=coldp_dps, pvalue.cols=pvalue.cols)[2]))
+		optim.spacing <- function(z) return(abs(FFCSV.evalSpacing(mainfont=z, orient=orient, type=type, filestem=tmpfilestem, blank.right.percent=blank.right.percent, blank.left.percent=blank.left.percent, blank.bottom.percent=blank.bottom.percent, mar=mar, col.ids=col.ids, anyhets=anyhets, rawdata=rawdata, HetTrendScale=HetTrendScale, print.headings=print.headings, plot.width=plot.width, nforests=nforests, ValueDigits=ValueDigits, coldp_names=coldp_names, coldp_dps=coldp_dps, pvalue.cols=pvalue.cols)[2]))
 		
 		# do the optimisation
 		optim.mainfont <- optimise(f=optim.spacing, interval=c(0, current.mainfont),maximum=FALSE)
 		mainfont <- optim.mainfont$minimum
 
 		# now set up a page so that we can save the spacing given the optimal mainfont
-		SetPage(orient=orient, perpage=1, type=type, filestem=tmpfilestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, titlespace=titlespace, footerspace=footerspace, attempt_adobe_kill=FALSE)
+		SetPage(orient=orient, perpage=1, type=type, filestem=tmpfilestem, blank.right.percent=blank.right.percent, blank.left.percent=blank.left.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, titlespace=titlespace, footerspace=footerspace, attempt_adobe_kill=FALSE)
 		par(mar=mar)
 		blankPlot(c(0,100), c(0,100), mainfont)
 		par(xpd=NA)		
@@ -542,6 +544,7 @@ ForestFromCSV <- function(file,
 										type=type, 
 										filestem=tmpfilestem, 
 										blank.right.percent=blank.right.percent, 
+										blank.left.percent=blank.left.percent,
 										blank.bottom.percent=blank.bottom.percent, 
 										mar=mar, 
 										col.ids=col.ids, 
@@ -561,7 +564,7 @@ ForestFromCSV <- function(file,
 		flush.console()
 
 	} else {
-		SetPage(orient=orient, perpage=1, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, titlespace=titlespace, footerspace=footerspace, attempt_adobe_kill=attempt_adobe_kill)
+		SetPage(orient=orient, perpage=1, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.left.percent=blank.left.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, titlespace=titlespace, footerspace=footerspace, attempt_adobe_kill=attempt_adobe_kill)
 		par(mar=mar)
 		blankPlot(c(0,100), c(0,100), mainfont)
 		par(xpd=NA)
@@ -585,14 +588,14 @@ ForestFromCSV <- function(file,
 
 		# need to know the forest Y locations
 		
-		SetPage(orient=orient, perpage=1, type=type, filestem=tmpfilestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, titlespace=titlespace, footerspace=footerspace, attempt_adobe_kill=FALSE)
+		SetPage(orient=orient, perpage=1, type=type, filestem=tmpfilestem, blank.right.percent=blank.right.percent, blank.left.percent=blank.left.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, titlespace=titlespace, footerspace=footerspace, attempt_adobe_kill=FALSE)
 		par(mar=mar)
 		blankPlot(c(0,100), c(0,100), mainfont)
 		forest.locs <- ForestBasic(forest1, LogScale=LogScale[1], ExponentiateDataOnPlot=ExponentiateDataOnPlot[1], xaxmin=1, xaxmax=2, mainfont=1, verbose=FALSE)
 		closeFile("PDF",suppress.notice=TRUE)
 
 		# do the optimisation
-		optim.TBmargin <- FFCSV.optimise.linespace(current.mar=mar, line.spacing=line.spacing, ylocs=forest.locs$YLocs, orient=orient, mainfont=mainfont, type=type, filestem=tmpfilestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, titlespace=titlespace, footerspace=footerspace)
+		optim.TBmargin <- FFCSV.optimise.linespace(current.mar=mar, line.spacing=line.spacing, ylocs=forest.locs$YLocs, orient=orient, mainfont=mainfont, type=type, filestem=tmpfilestem, blank.right.percent=blank.right.percent, blank.left.percent=blank.left.percent, blank.bottom.percent=blank.bottom.percent, titlespace=titlespace, footerspace=footerspace)
 
 		
 		# replace mar with our optimised version
@@ -608,7 +611,7 @@ ForestFromCSV <- function(file,
 		
 		cat("done\n")
 		flush.console()
-		SetPage(orient=orient, perpage=1, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, titlespace=titlespace, footerspace=footerspace, attempt_adobe_kill=FALSE)
+		SetPage(orient=orient, perpage=1, type=type, filestem=filestem, blank.right.percent=blank.right.percent, blank.left.percent=blank.left.percent, blank.bottom.percent=blank.bottom.percent, verbose=FALSE, titlespace=titlespace, footerspace=footerspace, attempt_adobe_kill=FALSE)
 		par(mar=mar)
 		blankPlot(c(0,100), c(0,100), mainfont)
 		par(xpd=NA)	
@@ -623,6 +626,7 @@ ForestFromCSV <- function(file,
 	
 	if (!is.null(font) & font != "sans") SetPage.command <- paste(SetPage.command, 'font=\"', font,'\",', sep="")
 	if (!is.null(blank.right.percent)) SetPage.command <- paste(SetPage.command, 'blank.right.percent=', blank.right.percent,',', sep="")
+	if (!is.null(blank.left.percent)) SetPage.command <- paste(SetPage.command, 'blank.left.percent=', blank.left.percent,',', sep="")
 	if (!is.null(blank.bottom.percent)) SetPage.command <- paste(SetPage.command, 'blank.bottom.percent=', blank.bottom.percent,',', sep="")
 	if (!is.null(footer.title)) SetPage.command <- paste(SetPage.command, 'footer.title=', deparse(footer.title, width.cutoff=500L),', ', sep="")
 	if (!is.null(footer.title.cex)) SetPage.command <- paste(SetPage.command, 'footer.title.cex=', footer.title.cex, ', ', sep="")
@@ -951,7 +955,7 @@ FFCSV.writeTests <- function(foresti, rawdata, type="Het", pretty.label="Heterog
 		if (is.na(current.test[1])) next
 		# make the command
 		if (!(current.test[1] == "blank")) {
-			Test.command <- paste(Test.command, 'text(x=', xaxmin+plot.width+(spacing/2), ', y=', test.locs, '[', j, '], labels=expression(paste(\"', pretty.label, ': \", chi[', current.test[1], ']^2, \"=', current.test[2], ' (p=', current.test[3], ')\", sep=\"\")), adj=0, cex=', HetTrendScale, ')\n\n', sep="")
+			Test.command <- paste(Test.command, 'text(x=', xaxmin+plot.width+(spacing/2), ', y=', test.locs, '[', j, '], labels=expression(paste(\"', pretty.label, ': \", chi[', current.test[1], ']^2, \"=', current.test[2], ' (p', ifelse(substr(current.test[3],1,1) %in% c("<", ">"), "", "="), current.test[3], ')\", sep=\"\")), adj=0, cex=', HetTrendScale, ')\n\n', sep="")
 		}
 	}
 	return(Test.command)
