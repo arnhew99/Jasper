@@ -29,7 +29,9 @@
 \item{xlab.adjust}{ (default: 0)}
 \item{ValueLabels}{Add the values and confidence intervals, anchored to the right of the forest (default: TRUE)}
 \item{ValueLabelsHeader}{Heading to put above the ValueLabels column (default: Hazard ratio)}
+\item{ValueLabelsEffectSE}{ (default: FALSE)}
 \item{ValueDigits}{ (default: NULL)}
+\item{ValueDigitsSE}{ (default: NULL)}
 \item{separator}{Separator character to use in the confidence intervals in the ValueLabels column (default: NULL)}
 \item{NLabel}{Add a column anchored to the left of the forest, usually containing N (default: FALSE)}
 \item{NLabelHeader}{Heading to put above the N column (default: N)}

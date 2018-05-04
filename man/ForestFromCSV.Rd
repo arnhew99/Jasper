@@ -46,13 +46,16 @@
 \item{blank.labels.font}{Font style to use for labels that occur in blank rows of the forest. 1 is normal, 2 is bold, 3 is italic, 4 is bold italic. (default: 2)}
 \item{ValueLabels}{Add the ValueLabels column to the right of each forest (default: TRUE)}
 \item{ValueLabelsHeader}{Heading to be placed above the ValueLabels column}
+\item{ValueLabelsEffectSE}{ (default: FALSE)}
 \item{ValueDigits}{Number of digits to print after the decimal point. Either, a single number used globally, or a vector of numbers, 1 per forest (default: NULL)}
+\item{ValueDigitsSE}{ (default: NULL)}
 \item{HetTrendScale}{Font scaling applied to any heterogeneity or trend tests (default: 0.8)}
 \item{boxparm.stderr}{Provide the value of the smallest stderr to be used with computing the boxparm, instead of detecting it automatically.  (default: NULL)}
 \item{boxparm.sharedstderr}{If TRUE, share box scaling information across all forests. If FALSE the scaling is determined on a per-forest basis. (default: TRUE)}
 \item{boxsizeoverride}{Disable scaling of boxes by inverse of variance (default: FALSE)}
 \item{boxTop}{ (default: FALSE)}
 \item{blank.right.percent}{Percentage of the whole page to leave empty at the right. Useful for squashing figures into the top left (default: NULL)}
+\item{blank.left.percent}{ (default: NULL)}
 \item{blank.bottom.percent}{Percentage of the whole page to leave empty at the bottom. (default: NULL)}
 \item{titlespace}{Proportion of the page to allocate to a title area at the top of the page (default: 0.1)}
 \item{footerspace}{Proportion of the page to allocate to a footer area at the bottom of the page (default: 0.1)}

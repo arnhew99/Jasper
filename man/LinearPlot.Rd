@@ -27,11 +27,13 @@
 \item{xticklabs}{Vector of labels to use at tick marks instead of X axis position of mark (default: NULL)}
 \item{xticklabs.cex}{ (default: 1)}
 \item{xlab}{X axis label (default: NULL)}
+\item{xlab.line}{ (default: NULL)}
 \item{yaxis}{Allow this function to draw an Y axis  (default: TRUE)}
 \item{yaxis.line}{ (default: 1)}
 \item{yticks}{Vector of tick marks to put on the Y axis (default: NULL)}
 \item{yticklabs}{Vector of labels to use at tick marks instead of Y axis position of mark (default: NULL)}
 \item{ylab}{Y axis label (default: NULL)}
+\item{ylab.line}{ (default: NULL)}
 \item{yticklabs.cex}{ (default: 1)}
 \item{mainfont}{Font scaling applied to cex (default: 1)}
 \item{PointLabelsTop}{Name of column in line group that gives labels to put above points (default: NULL)}
@@ -40,6 +42,7 @@
 \item{PointLabelsCol}{Font colour to use for the point labels (default: NULL)}
 \item{PointLabelsCEX}{Font scaling applied to the point labels, relative to the panel default (default: 1)}
 \item{useArrows}{ (default: TRUE)}
+\item{TruncateAtPlotLims}{ (default: TRUE)}
 \item{boxparmx}{Specify X length of "unit" box (default: NULL)}
 \item{boxparmy}{Specify Y length of "unit" box (default: NULL)}
 \item{boxparm.stderr}{Provide the value of the smallest stderr to be used with computing the boxparm, instead of detecting it automatically.  (default: NULL)}

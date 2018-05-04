@@ -5,5 +5,6 @@
 \arguments{
 \item{folder}{Path to folder (default: .)}
 \item{verbose}{ (default: TRUE)}
+\item{upcase.names}{ (default: FALSE)}
 }
 \author{Matt Arnold}
