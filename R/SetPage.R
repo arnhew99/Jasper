@@ -38,7 +38,9 @@ function(orient="PORTRAIT",
 		mat=NULL, 
 		widthvec=NULL, 
 		heightvec=NULL,
-		unload.devices=TRUE)
+		panels_across_then_down=TRUE,
+		unload.devices=TRUE,
+		noplot=FALSE)
 {
 	# Page set up routine
 	# One title bar at the top
@@ -189,8 +191,8 @@ function(orient="PORTRAIT",
 	if (type=="PNG") {
 		cat("PNG output is experimental\n")
 		outfile <- paste(filestem, ".png", sep="")
-		if (orient=="LANDSCAPE") png(outfile, width=page_width, height=page_height, units="in", res=576, pointsize=8, bg=png_bg, type="cairo-png", family=font)
-		else png(outfile, width=page_width, height=page_height, units="in", res=576, pointsize=8, bg=png_bg, type="cairo-png", family=font) 
+		if (orient=="LANDSCAPE") png(outfile, width=page_width, height=page_height, units="in", res=page_dpi, pointsize=page_pointsize, bg=png_bg, type="cairo-png", family=font)
+		else png(outfile, width=page_width, height=page_height, units="in", res=page_dpi, pointsize=page_pointsize, bg=png_bg, type="cairo-png", family=font) 
 	}
 	
 	if (type=="TIFF") {
@@ -266,7 +268,7 @@ function(orient="PORTRAIT",
 		#     How many blank plot cells should there be at the end?
 		nleft <- (nhoriz*nvert) - perpage
 		#     List of numbers to go in the plotting cells
-		plotvec <- c(seq(2, perpage+1), rep(0, nleft))
+		plotvec <- c(2:(perpage+1), rep(0, nleft))
 
 		#     No. of cells in the matrix, including the blanks this time
 		ncellsh <- (2*nhoriz) + 1
@@ -293,7 +295,14 @@ function(orient="PORTRAIT",
 
 		#     Add the footer bar
 		matvec <- c(matvec, rep(1, ncellsh))
-		mat <- matrix(matvec, ncol=ncellsh, byrow=TRUE)
+
+		if (panels_across_then_down) {
+			plotseq <- c(0,1,2:(perpage+1),perpage+2)
+		} else {
+			# we need to rearrange the plotting order 
+			plotseq <- c(0,1,as.vector(matrix(2:(perpage+1),ncol=nhoriz,byrow=TRUE)),perpage+2)
+		}
+		mat <- matrix(match(matvec, plotseq)-1, ncol=ncellsh, byrow=TRUE)
 		
 		# if we want blank space on the page then adjust the layout 
 		if (!is.null(blank.right.percent)) {
@@ -367,63 +376,66 @@ function(orient="PORTRAIT",
 
 #     Finally define the layout
       layout(mat, widthvec, heightvec, respect=FALSE)
+	  
+	  if (!noplot) {
 
-      # footer and label into the bottom left
-      par(mar=c(.1,.1,.1,.1))
-      plot(c(0, 1), c(0, 1), type='n', axes=F, xlab="", ylab="")
+		  # footer and label into the bottom left
+		  par(mar=c(.1,.1,.1,.1))
+		  plot(c(0, 1), c(0, 1), type='n', axes=F, xlab="", ylab="")
 
-      # footer
-	  if (!suppress.date) {
-			user.footer <- footer
-			# find out if we have a build number to add
-			if ("Jasper" %in% loadedNamespaces()) buildnum <- packageDescription("Jasper")$Version
-			else if (exists(".jasper.buildnum")) buildnum <- .jasper.buildnum
-			else buildnum <- "2"
-			if (ckb.participants & (!is.null(detectNpeople()))) {
-				if (verbose) cat("Detected npeople.csv in the current directory, printing in footer.\n")
-				footer <- c(paste(date(),". Filename: ", getwd(), "/", filestem, ".", tolower(type), sep=""), paste("Created with Jasper (\uf903\u65af\u73c0) ", buildnum, ". In ", read.csv(detectNpeople()), " participants.", footer[1], sep=""))
-			} else {
-				footer <- c(paste(date(),". Filename: ", getwd(), "/", filestem, ".", tolower(type), sep=""), paste("Created with Jasper (\uf903\u65af\u73c0) ", buildnum, " ", footer[1], sep=""))
+		  # footer
+		  if (!suppress.date) {
+				user.footer <- footer
+				# find out if we have a build number to add
+				if ("Jasper" %in% loadedNamespaces()) buildnum <- packageDescription("Jasper")$Version
+				else if (exists(".jasper.buildnum")) buildnum <- .jasper.buildnum
+				else buildnum <- "2"
+				if (ckb.participants & (!is.null(detectNpeople()))) {
+					if (verbose) cat("Detected npeople.csv in the current directory, printing in footer.\n")
+					footer <- c(paste(date(),". Filename: ", getwd(), "/", filestem, ".", tolower(type), sep=""), paste("Created with Jasper (\uf903\u65af\u73c0) ", buildnum, ". In ", read.csv(detectNpeople()), " participants.", footer[1], sep=""))
+				} else {
+					footer <- c(paste(date(),". Filename: ", getwd(), "/", filestem, ".", tolower(type), sep=""), paste("Created with Jasper (\uf903\u65af\u73c0) ", buildnum, " ", footer[1], sep=""))
+				}
+				
 			}
-			
-		}
-			
-		nfooter <- length(footer)
-		if (nfooter>0)
-		{
-			cur.xpd <- par("xpd")
-			par(xpd=NA)
-			linedrop <- strheight('M\nM', cex=footer.cex) - (2*strheight("M", cex=footer.cex))
-			# yat <- (1 + 0.5*linedrop) - linedrop*seq(1, nfooter)
-			yat <- (1:nfooter - 1)*(linedrop+strheight("M",cex=footer.cex))+linedrop
-			if (type %in% c("PDF", "SVG")) {
-				text(0, yat, footer, cex=footer.cex, adj=0, family=ifelse(any((Sys.info()[1] %in% c("Darwin", "DARWIN", "darwin", "AQUA", "aqua", "Aqua"))),font,"Arial Unicode MS"))
-			} else {
-				text(0, yat, footer, cex=footer.cex, adj=0)
+				
+			nfooter <- length(footer)
+			if (nfooter>0)
+			{
+				cur.xpd <- par("xpd")
+				par(xpd=NA)
+				linedrop <- strheight('M\nM', cex=footer.cex) - (2*strheight("M", cex=footer.cex))
+				# yat <- (1 + 0.5*linedrop) - linedrop*seq(1, nfooter)
+				yat <- (1:nfooter - 1)*(linedrop+strheight("M",cex=footer.cex))+linedrop
+				if (type %in% c("PDF", "SVG")) {
+					text(0, yat, footer, cex=footer.cex, adj=0, family=ifelse(any((Sys.info()[1] %in% c("Darwin", "DARWIN", "darwin", "AQUA", "aqua", "Aqua"))),font,"Arial Unicode MS"))
+				} else {
+					text(0, yat, footer, cex=footer.cex, adj=0)
+				}
+				par(xpd=cur.xpd)
 			}
-			par(xpd=cur.xpd)
-		}
-		 
-		if (!is.null(footer.title)) {
-			cur.xpd <- par("xpd")
-			par(xpd=NA)
-			linedrop <- strheight("M\nM",cex=footer.title.cex) - (2*strheight('M', cex=footer.title.cex))
-			nfooter.title <- length(footer.title)
-			yat <- 1-(strheight("M",cex=footer.title.cex)+linedrop)*(1:nfooter.title -1)
-			# print(yat)
-			text(0, 1, footer.title[1], cex=footer.title.cex,adj=c(0,1), font=2)
-			if (nfooter.title > 1) {
-				text(0, yat[2:nfooter.title], footer.title[2:nfooter.title], cex=footer.title.cex, adj=c(0,1), font=ifelse(footer.title.allbold,2,1))
+			 
+			if (!is.null(footer.title)) {
+				cur.xpd <- par("xpd")
+				par(xpd=NA)
+				linedrop <- strheight("M\nM",cex=footer.title.cex) - (2*strheight('M', cex=footer.title.cex))
+				nfooter.title <- length(footer.title)
+				yat <- 1-(strheight("M",cex=footer.title.cex)+linedrop)*(1:nfooter.title -1)
+				# print(yat)
+				text(0, 1, footer.title[1], cex=footer.title.cex,adj=c(0,1), font=2)
+				if (nfooter.title > 1) {
+					text(0, yat[2:nfooter.title], footer.title[2:nfooter.title], cex=footer.title.cex, adj=c(0,1), font=ifelse(footer.title.allbold,2,1))
+				}
+				par(xpd=cur.xpd)
 			}
-			par(xpd=cur.xpd)
-		}
 
-      # plot label
-      nlabel <- length(label)
-      yat <- 0.6*max(strheight(label, cex=1))
-      if (NoLabel!=TRUE) text(0, yat, label, cex=1, adj=0)
-      
-      par(mar=c(5, 4, 4, 2) + 0.1, ljoin="mitre")
+		  # plot label
+		  nlabel <- length(label)
+		  yat <- 0.6*max(strheight(label, cex=1))
+		  if (NoLabel!=TRUE) text(0, yat, label, cex=1, adj=0)
+		  
+		  par(mar=c(5, 4, 4, 2) + 0.1, ljoin="mitre")
+	  }
 
       if (display.layout) layout.show(perpage+2)         
       }

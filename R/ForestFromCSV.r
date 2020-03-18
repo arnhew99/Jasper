@@ -250,10 +250,11 @@ ForestFromCSV <- function(file,
 	
 	# set up how the data gets loaded, if we need to ignore any columns then add a sentence to do this
 	if (insidePackage) {
-		MakeForest.command <- paste('# set the working directory\nsetwd(\"', getwd(), '\")\n\n# load Jasper\nrequire(Jasper)\n\n# read in the raw data\nrawdata <- read.csv(\"', file, '\", as.is=TRUE)\n', sep="")
+		MakeForest.command <- paste('# set the working directory\nsetwd(normalizePath(\"', gsub("\\", "\\\\", normalizePath(getwd()), fixed=TRUE), '\"))\n\n# load Jasper\nrequire(Jasper)\n\n', sep="")
 	} else {
-		MakeForest.command <- paste('# set the working directory\nsetwd(\"', getwd(), '\")\n\n# load Jasper\nsource(', deparse(.jasper.load),')\n\n# read in the raw data\nrawdata <- read.csv(\"', file, '\", as.is=TRUE)\n', sep="")
+		MakeForest.command <- paste('# set the working directory\nsetwd(normalizePath(\"', gsub("\\", "\\\\", normalizePath(getwd()), fixed=TRUE), '\"))\n\n# load Jasper\nsource(', deparse(.jasper.load),')\n\n', sep="")
 	}
+	MakeForest.command <- paste(MakeForest.command, '# read in the raw data\nrawdata <- read.csv(\"', gsub("\\", "\\\\", normalizePath(file), fixed=TRUE), '\", as.is=TRUE)\n', sep="")
 	if (length(ignore.cols) != 0) {
 		rawdata <- rawdata[,-ignore.cols]
 		MakeForest.command <- paste(MakeForest.command, "rawdata <- rawdata[,-(", deparse(ignore.cols),")]\n\n", sep="")

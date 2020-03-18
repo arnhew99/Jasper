@@ -23,11 +23,13 @@ LinearPlot <- function(
 						xticklabs=NULL,
 						xticklabs.cex=1,
 						xlab=NULL,
+						xlab.line=NULL,
 						yaxis=TRUE,
 						yaxis.line=1,
 						yticks=NULL, 
 						yticklabs=NULL,
 						ylab=NULL,
+						ylab.line=NULL,
 						yticklabs.cex=1,
 						mainfont=1, 
 						PointLabelsTop=NULL, 
@@ -36,6 +38,7 @@ LinearPlot <- function(
 						PointLabelsCol=NULL, 
 						PointLabelsCEX=1, 
 						useArrows=TRUE,
+						TruncateAtPlotLims=TRUE,
 						boxparmx=NULL, 
 						boxparmy=NULL, 
 						boxparm.stderr=NULL, 
@@ -333,8 +336,12 @@ LinearPlot <- function(
 			if (CurrentPlotLims()$ylim[[1]]> y1){ 
 				arrows(x, CurrentPlotLims()$ylim[[1]],y1=CurrentPlotLims()$ylim[[1]]+strheight("A"), code=1, col=linecol,lwd=linelwd,lend=2,length=0.1)
 			}
+		} 
+		
+		if (TruncateAtPlotLims) {
+			y1 <- max(CurrentPlotLims()$ylim[1],y1)
+			y2 <- min(CurrentPlotLims()$ylim[2],y2)
 		}
-
 		lines(c(x,x), c(y1,y2), col=linecol, lwd=linelwd, lend=2)
 		par(xpd=NA)
 	}
@@ -562,7 +569,7 @@ LinearPlot <- function(
 	
 	}
 	
-	if (!is.null(xlab)) AxisLabels(xlab=xlab, ylab="", xline=ifelse(exists("xlab.line"), xlab.line, 2.5+xaxis.line), mainfont=1)
-	if (!is.null(ylab)) AxisLabels(xlab="", ylab=ylab, yline=ifelse(exists("ylab.line"), ylab.line, 3+yaxis.line), mainfont=1)
+	if (!is.null(xlab)) AxisLabels(xlab=xlab, ylab="", xline=ifelse(!is.null("xlab.line"), xlab.line, 2.5+xaxis.line), mainfont=1)
+	if (!is.null(ylab)) AxisLabels(xlab="", ylab=ylab, yline=ifelse(!is.null("ylab.line"), ylab.line, 3+yaxis.line), mainfont=1)
 	
 }

@@ -54,7 +54,7 @@ Histogram <- function(values,
 		p3 <- QMap(cbreak1, cdens, xlim, ylim, xregion, yregion)
 		p4 <- QMap(cbreak1, cdens1, xlim, ylim, xregion, yregion)
 		
-		rect(xleft=p1[1], xright=p3[1], ybottom=p1[2], ytop=p3[2], col=col)
+		rect(xleft=p1[1], xright=p3[1], ybottom=p1[2], ytop=p3[2], col=col, border=border)
 		
 		lines(c(p1[1],p2[1]), c(p1[2], p2[2]), col=border)
 		lines(c(p1[1],p3[1]), c(p2[2], p2[2]), col=border)
@@ -219,5 +219,7 @@ Histogram <- function(values,
 	
 	
 	par(lend = clend)
+	
+	return(list(breaks=histfit$breaks, density=histfit$density))
 	
 }
