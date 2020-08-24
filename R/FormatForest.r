@@ -29,8 +29,8 @@ FormatForest <- function(rawdata,
 		forest <- na.omit(rawdata[,c(EstimateCol, StdErrCol)])
 
 		names(forest) <- c(newEstCol, "stderr")
-		forest$LCI <- forest[,newEstCol] - 2*forest$stderr
-		forest$UCI <- forest[,newEstCol] + 2*forest$stderr
+		forest$LCI <- forest[,newEstCol] - 1.96*forest$stderr
+		forest$UCI <- forest[,newEstCol] + 1.96*forest$stderr
 		
 		if (logData) forest <- log(forest)
 	
