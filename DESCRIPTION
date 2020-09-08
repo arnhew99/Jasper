@@ -1,10 +1,11 @@
 Package: Jasper
 Type: Package
 Title: Jasper makes plots.
-Version: 2-265
-Date: 04-05-2018
+Version: 2-266
+Date: 2020-08-09
 Author: Matt Arnold
-Maintainer: Matt Arnold <mga37@medschl.cam.ac.uk>
+Maintainer: Matt Arnold <arnhew99.github@outlook.com>
 Description: Jasper is a system for creating consistently similar figures for publications.
 License: GPL-3
 LazyData: yes
+URL: https://github.com/arnhew99/Jasper
