@@ -13,3 +13,8 @@ This should download and install Jasper into your usual R packages directory. Fo
 require(Jasper)
 ```
 as usual when you want to use it (i.e. there is no further need for the `devtools` package)
+
+You can generate a citation for this package by running
+```
+citation("Jasper")
+```
