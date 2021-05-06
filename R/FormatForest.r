@@ -5,7 +5,8 @@ FormatForest <- function(rawdata,
 							EstimateCol, 
 							StdErrCol=NULL, 
 							LCICol=NULL, 
-							UCICol=NULL, 
+							UCICol=NULL,
+							BoxSizeCol=NULL, 
 							logData=FALSE, 
 							findDiamonds=NULL, 
 							findShow=NULL,
@@ -15,7 +16,8 @@ FormatForest <- function(rawdata,
 							findhideNoEffect=NULL, 
 							getBlanks=FALSE, 
 							getHets=FALSE, 
-							getTrends=FALSE
+							getTrends=FALSE,
+							YLogNeededForSE=FALSE
 ) {
 
 	if (all(is.null(StdErrCol), is.null(LCICol), is.null(UCICol), !getBlanks)) stop("Need to specify StdErrCol or both of LCICol and UCICol")
@@ -41,12 +43,12 @@ FormatForest <- function(rawdata,
 		names(forest) <- c(newEstCol, "LCI", "UCI")
 		if (logData) forest <- log(forest)
 
-		if (all(substr(EstimateCol,1,2) == "HR", !logData)) {
+		if (any(all(substr(EstimateCol,1,2) == "HR", !logData), YLogNeededForSE)) {
 			# the special CEU case where we are given hazard ratios 
 			# but draw the axis on the linear scale... which means 
 			# that we really need to calculate the stderr from the 
 			# log estimate and log UCI
-			cat("Calculating SE from log HR and log UCI\n")
+			cat("Calculating SE from log Estimate column and log UCI\n")
 			flush.console()
 			forest$stderr <- (log(forest$UCI) - log(forest[,newEstCol]))/1.96
 		} else {
@@ -58,6 +60,14 @@ FormatForest <- function(rawdata,
 		
 	
 	} else stop("Unknown error.........")
+
+	if (!is.null(BoxSizeCol)) {
+		cat("Overriding box size calculation for forest", forest.n, "using weights in column:", BoxSizeCol, "\n")
+		flush.console()
+		forest <- cbind(forest, data.frame(boxsize=na.omit(rawdata[[BoxSizeCol]])))
+	} else {
+		forest$boxsize <- 1
+	}
 	
 	# reserved keywords 
 	res_keys <- c("IsDiamond", "Show", "ShowCI", "FillColour", "DiamondGuidelines", "hideNoEffect")

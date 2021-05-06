@@ -14,10 +14,12 @@ ForestFromCSV <- function(file,
 	LogScale=TRUE, 
 	ExponentiateDataOnPlot=FALSE, 
 	DataLogged=NULL, 
+	YLogNeededForSE=FALSE,
 	EstimateCol=NULL,
 	StdErrCol=NULL,
 	LCICol=NULL,
 	UCICol=NULL,
+	BoxSizeCol=NULL,
 	FormatPValue=NULL,
 	pvalue.use.lower.limit=FALSE,
 	pvalue.lower.limit=1e-100,
@@ -74,7 +76,9 @@ ForestFromCSV <- function(file,
 	#
 	################################################################
 	
-	
+	# store what the supplied function call was
+	function_call <- paste("#", deparse(match.call()))
+
 	# check which version of R we're running on... if it's R >= 3.4.0 then 
 	# we need to temporarily disable the JIT compiler 
 	if (all(as.integer(R.version$major) >= 3L, as.integer(substr(R.version$minor,1,1)) >= 4)) {
@@ -145,7 +149,11 @@ ForestFromCSV <- function(file,
 	
 	# check to see that if boxsizeoverride=TRUE that we have a boxparm.stderr to use
 	if (all(boxsizeoverride, is.null(boxparm.stderr))) stop("\nIf using boxsizeoverride=TRUE, a value must be provided for boxparm.stderr\nto set the box size.")
-	
+	if (all(!is.null(BoxSizeCol), is.null(boxparm.stderr))) stop("\nIf setting BoxSizeCol, a value must be provided for boxparm.stderr\nto box size when BoxSizeCol is equal to 1.")
+	# if BoxSizeCol is provided, we need to override boxsizeoverride to be TRUE
+	if (!is.null(BoxSizeCol)) {
+		boxsizeoverride <- TRUE
+	}
 	
 	
 	# check to see what's going on with EstimateCol etc
@@ -161,6 +169,7 @@ ForestFromCSV <- function(file,
 	if (all(!is.null(EstimateCol), is.null(StdErrCol), !is.null(LCICol), !is.null(UCICol), length(EstimateCol) != length(UCICol))) stop("\nEstimateCol and UCICol must be the same length.")
 	if (all(!is.null(EstimateCol), is.null(StdErrCol), !is.null(LCICol), !is.null(UCICol), length(UCICol) != length(LCICol))) stop("\nUCICol and LCICol must be the same length.")
 	
+	if (all(!is.null(EstimateCol), !is.null(BoxSizeCol), length(EstimateCol) != length(BoxSizeCol))) stop("\nEstimateCol and BoxSizeCol must be the same length")
 	
 	
 	
@@ -256,6 +265,8 @@ ForestFromCSV <- function(file,
 	} else {
 		MakeForest.command <- paste('# set the working directory\nsetwd(normalizePath(\"', gsub("\\", "\\\\", normalizePath(getwd()), fixed=TRUE), '\"))\n\n# load Jasper\nsource(', deparse(.jasper.load),')\n\n', sep="")
 	}
+	# add the guess at what the function call was
+	MakeForest.command <- paste(MakeForest.command, '# function call (approximately)\n', paste0(function_call,collapse="\n"), '\n\n', sep="")
 	MakeForest.command <- paste(MakeForest.command, '# read in the raw data\nrawdata <- read.csv(\"', gsub("\\", "\\\\", normalizePath(file), fixed=TRUE), '\", as.is=TRUE)\n', sep="")
 	if (length(ignore.cols) != 0) {
 		rawdata <- rawdata[,-ignore.cols]
@@ -370,6 +381,11 @@ ForestFromCSV <- function(file,
 			current.UCI <- UCICol[i]
 			stderr.in.names <- FALSE
 		}
+		if (!is.null(BoxSizeCol)) {
+			current.boxsize <- BoxSizeCol[i]
+		} else {
+			current.boxsize <- NULL
+		}
 		if (substr(data.type.i,1,3) == "Log") {
 			logData <- FALSE
 			ExponentiateDataOnPlot[i] <- TRUE
@@ -392,11 +408,13 @@ ForestFromCSV <- function(file,
 														use.stderr=stderr.in.names, 
 														stderr.col=current.stderr, 
 														lci.col=current.LCI, 
-														uci.col=current.UCI, 
+														uci.col=current.UCI,
+														boxsize.col=current.boxsize, 
 														logData=logData, 
 														getBlanks=anyblanks,
 														getTrends=getTrends, 
-														getHets=getHets) 
+														getHets=getHets,
+														YLogNeededForSE=YLogNeededForSE)
 		assign(foresti, eval(parse(text=ForestFormat.command)))
 			
 		MakeForest.command <- paste(MakeForest.command, "# set up an object that stores the forest and associated metadata\n", foresti, " <- ", ForestFormat.command, "\n", sep="")

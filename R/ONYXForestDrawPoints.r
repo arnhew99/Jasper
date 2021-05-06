@@ -1,5 +1,5 @@
 ##
-ONYXForestDrawPoints <- function(estim, lower, upper, LogScale=FALSE, ExponentiateDataOnPlot=FALSE, stderr, npoints, Range, xaxmin, xaxmax, boxparmx, boxparmy, YLocs, YLast, IsDiamond, DiamondGuidelines, Fill, Show, ShowCI, PColours, Guidelines=FALSE, boxsizeoverride=FALSE, roundedSquares=FALSE, lwd=1, CISecond=TRUE) {
+ONYXForestDrawPoints <- function(estim, lower, upper, boxsize, LogScale=FALSE, ExponentiateDataOnPlot=FALSE, stderr, npoints, Range, xaxmin, xaxmax, boxparmx, boxparmy, YLocs, YLast, IsDiamond, DiamondGuidelines, Fill, Show, ShowCI, PColours, Guidelines=FALSE, boxsizeoverride=FALSE, roundedSquares=FALSE, lwd=1, CISecond=TRUE) {
 
 	if (LogScale) {
 		
@@ -45,10 +45,10 @@ ONYXForestDrawPoints <- function(estim, lower, upper, LogScale=FALSE, Exponentia
 
 		# print((boxrights - boxlefts) * (boxtops - boxbottoms))
 	} else {
-		boxlefts <- atvals - (0.5*boxparmx)
-		boxrights <- atvals + (0.5*boxparmx)
-		boxtops <- YLocs + (0.5*boxparmy)
-		boxbottoms <- YLocs - (0.5*boxparmy)
+		boxlefts <- atvals - (0.5*boxparmx) * sqrt(boxsize)
+		boxrights <- atvals + (0.5*boxparmx) * sqrt(boxsize)
+		boxtops <- YLocs + (0.5*boxparmy) * sqrt(boxsize)
+		boxbottoms <- YLocs - (0.5*boxparmy) * sqrt(boxsize)
 		cat("Box sizes are overridden, they are NOT inversely proportional to standard error\n")
 	}
 	

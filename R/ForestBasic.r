@@ -119,6 +119,10 @@ ForestBasic <- function(rawdata,
 		rawdata$UCI <- rawdata$HR + 2*rawdata$stderr
 		if (verbose) cat("$UCI not specified (computing from provided $stderr, care needed).\n")
 	}
+	if (is.null(rawdata$boxsize)) {
+		rawdata$boxsize <- rep(1, npoints)
+		if (verbose) cat("$boxsize not specified, setting to 1.\n")
+	}
 	if (is.null(rawdata$EVENTS)) {
 		rawdata$EVENTS <- rep(100,npoints)
 		if (verbose) cat("$EVENTS not specified (defaulting to N=100).\n")
@@ -223,6 +227,7 @@ ForestBasic <- function(rawdata,
 		lower=rawdata$LCI, 
 		upper=rawdata$UCI, 
 		stderr=rawdata$stderr, 
+		boxsize=rawdata$boxsize,
 		LogScale = LogScale, 
 		ExponentiateDataOnPlot=ExponentiateDataOnPlot, 
 		npoints=npoints, 

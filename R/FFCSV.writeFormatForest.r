@@ -3,11 +3,13 @@ FFCSV.writeFormatForest <- function(forest.n=1,
 									use.stderr=TRUE, 
 									stderr.col=NULL, 
 									lci.col=NULL, 
-									uci.col=NULL, 
+									uci.col=NULL,
+									boxsize.col=NULL, 
 									logData=FALSE, 
 									getBlanks=FALSE,
 									getTrends=FALSE, 
-									getHets=FALSE) 
+									getHets=FALSE,
+									YLogNeededForSE=FALSE) 
 {
 
 	# need to write out two versions, apparently
@@ -15,13 +17,21 @@ FFCSV.writeFormatForest <- function(forest.n=1,
 	# one to be executed immediately (although I don't really know what the difference is? 
 
 	start_part <- paste0('FormatForest(rawdata=rawdata, forest.n=', forest.n, ', EstimateCol = \"', estimate.col, '\", ')
-	end_part <- paste0('logData=', as.character(logData),', getBlanks=', as.character(getBlanks), ', getHets=', as.character(getHets), ', getTrends=', as.character(getTrends),')\n')
+	end_part <- paste0('logData=', as.character(logData),
+						', getBlanks=', as.character(getBlanks), 
+						', getHets=', as.character(getHets), 
+						', getTrends=', as.character(getTrends),
+						', YLogNeededForSE=', as.character(YLogNeededForSE),
+						')\n')
 	
 	mid_part <- ""
 	if (use.stderr) {
 		mid_part <- paste0('StdErrCol=\"', stderr.col, '\", ')
 	} else {
 		mid_part <- paste0('LCICol=\"', lci.col, '\", UCICol=\"', uci.col, '\", ')
+	}
+	if (!is.null(boxsize.col)) {
+		mid_part <- paste0(mid_part, 'BoxSizeCol=\"', boxsize.col, '\", ')
 	}
 	
 	command <- paste0(start_part, mid_part, end_part)
