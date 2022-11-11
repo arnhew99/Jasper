@@ -1,5 +1,5 @@
 ##
-ONYXForestDrawPoints <- function(estim, lower, upper, boxsize, LogScale=FALSE, ExponentiateDataOnPlot=FALSE, stderr, npoints, Range, xaxmin, xaxmax, boxparmx, boxparmy, YLocs, YLast, IsDiamond, DiamondGuidelines, Fill, Show, ShowCI, PColours, Guidelines=FALSE, boxsizeoverride=FALSE, roundedSquares=FALSE, lwd=1, CISecond=TRUE) {
+ONYXForestDrawPoints <- function(estim, lower, upper, boxsize, LogScale=FALSE, ExponentiateDataOnPlot=FALSE, stderr, npoints, Range, xaxmin, xaxmax, boxparmx, boxparmy, YLocs, YLast, IsDiamond, DiamondGuidelines, Fill, Show, ShowCI, PColours, Guidelines=FALSE, boxsizeoverride=FALSE, roundedSquares=FALSE, lwd=1, CISecond=TRUE, DiamondHeightFactor=1.3) {
 
 	if (LogScale) {
 		
@@ -146,7 +146,9 @@ ONYXForestDrawPoints <- function(estim, lower, upper, boxsize, LogScale=FALSE, E
 	if (any(SuperHighClip))	arrows(highvals[SuperHighClip], YLocs[SuperHighClip], lowvals[SuperHighClip], YLocs[SuperHighClip], length=ArLen, col=LineCol[SuperHighClip], lend=2, lwd=lwd)
 
 	#  Now for the diamonds
-	Heights <- rep(80/YLast, npoints)
+	# Heights <- rep(80/YLast, npoints) # not sure why this is hardcoded
+	# make the diamonds the same height as ordinary text
+	Heights <- rep(strheight("A", cex=1), npoints)*DiamondHeightFactor
 	FillCol <- rep(NA, npoints)
 	FillCol[FillDiamonds] <- PColours[FillDiamonds]
 	#  Custom diamond plotting function
